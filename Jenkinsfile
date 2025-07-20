@@ -16,7 +16,7 @@ pipeline {
         stage('Publish JMeter Report') {
             steps {
                 perfReport errorFailedThreshold: 0, errorUnstableThreshold: 0, 
-                    sourceDataFiles: 'target/jmeter/results/*.jtl'
+                    sourceDataFiles: 'target/jmeter/results/*.csv'
             }
         }
     }
