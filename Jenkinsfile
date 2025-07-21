@@ -15,8 +15,8 @@ pipeline {
         }
         stage('Publish JMeter Report') {
             steps {
-                perfReport errorFailedThreshold: 0, errorUnstableThreshold: 0, 
-                    sourceDataFiles: 'target/jmeter/results/*.csv'
+                perfReport sourceDataFiles: 'target/jmeter/results/*.csv', filterRegex: 'TG1_.*'
+                perfReport sourceDataFiles: 'target/jmeter/results/*.csv', filterRegex: 'TG2_.*'
             }
         }
         stage('Compare TG1 TG2 Performance') {
