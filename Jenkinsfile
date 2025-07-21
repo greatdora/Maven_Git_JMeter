@@ -25,6 +25,8 @@ pipeline {
                     mkdir -p compare_results
                     cp target/jmeter/results/*.csv compare_results/
                     docker run --rm \
+                      -e http_proxy=http://127.0.0.1:7890 \
+                      -e https_proxy=http://127.0.0.1:7890 \
                       -v /Users/nye/.jenkins/workspace/Test_JMeter_Jenkins_HTML_Pipeline_111:/data \
                       python:3.11 \
                       bash -c "pip install pandas matplotlib && python /data/compare_tg.py"
