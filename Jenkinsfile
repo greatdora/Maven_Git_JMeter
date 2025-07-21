@@ -15,8 +15,7 @@ pipeline {
         }
         stage('Publish JMeter Report') {
             steps {
-                perfReport sourceDataFiles: 'target/jmeter/results/*.csv', filterRegex: 'TG1_.*'
-                perfReport sourceDataFiles: 'target/jmeter/results/*.csv', filterRegex: 'TG2_.*'
+                perfReport sourceDataFiles: 'target/jmeter/results/*.csv'
             }
         }
         stage('Compare TG1 TG2 Performance') {
