@@ -24,8 +24,10 @@ pipeline {
                 sh '''
                     mkdir -p compare_results
                     cp target/jmeter/results/*.csv compare_results/
-                    docker run --rm -v $PWD/compare_results:/data -v $PWD/compare_tg.py:/data/compare_tg.py python:3.11 \
-                        bash -c "pip install pandas matplotlib && python /data/compare_tg.py"
+                    docker run --rm \
+                      -v /Users/nye/.jenkins/workspace/Test_JMeter_Jenkins_HTML_Pipeline_111:/data \
+                      python:3.11 \
+                      bash -c "pip install pandas matplotlib && python /data/compare_tg.py"
                 '''
                 archiveArtifacts artifacts: 'compare_results/tg_compare.png', fingerprint: true
             }
