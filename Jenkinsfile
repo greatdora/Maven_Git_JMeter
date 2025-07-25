@@ -6,10 +6,12 @@ pipeline {
     stages {
         stage('Build & Run JMeter') {
             steps {
-                sh '''
-                    export NOW=$(date +%Y%m%d_%H%M)
-                    mvn clean verify -Djmeter.result.file.name=sample_test_$NOW
-                '''
+                withCredentials([string(credentialsId: 'JMETER_PASSWORD', variable: 'PASSWORD')]) {
+                    sh '''
+                        export NOW=$(date +%Y%m%d_%H%M)
+                        mvn clean verify -Djmeter.result.file.name=sample_test_$NOW -JPASSWORD=$PASSWORD
+                    '''
+                }
             }
         }
         stage('Analyze Results & Generate Dashboard') {
