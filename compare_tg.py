@@ -4,7 +4,8 @@ import glob
 import os
 from jinja2 import Template
 
-result_dir = '/data/compare_results'
+# result_dir = '/data/compare_results'  # 注释掉这行
+result_dir = 'compare_results'          # 用相对路径
 files = sorted(glob.glob(os.path.join(result_dir, '*.csv')))
 results = []
 
