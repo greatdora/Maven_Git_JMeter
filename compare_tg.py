@@ -93,7 +93,9 @@ dashboard_template = """
 </html>
 """
 
-with open(os.path.join(result_dir, 'dashboard.html'), 'w', encoding='utf-8') as f:
+output_path = os.path.join(result_dir, 'dashboard.html')
+os.makedirs(result_dir, exist_ok=True)
+with open(output_path, 'w', encoding='utf-8') as f:
     f.write(Template(dashboard_template).render(rows=results))
 
 print('Dashboard generated: compare_results/dashboard.html')
