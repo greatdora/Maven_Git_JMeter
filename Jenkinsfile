@@ -6,14 +6,18 @@ pipeline {
     stages {
         stage('Build & Run JMeter') {
             steps {
-                sh 'mvn clean verify'
+                sh '''
+                    export NOW=$(date +%Y%m%d_%H%M)
+                    mvn clean verify -Djmeter.result.file.name=sample_test_$NOW
+                '''
             }
         }
         stage('Analyze Results & Generate Dashboard') {
             steps {
                 sh '''
+                    export NOW=$(date +%Y%m%d_%H%M)
                     mkdir -p compare_results
-                    cp target/jmeter/results/*.csv compare_results/
+                    cp target/jmeter/results/sample_test_$NOW.csv compare_results/
                     pip3 install --user pandas matplotlib jinja2 -i https://pypi.tuna.tsinghua.edu.cn/simple
                     python3 compare_tg.py
                 '''
