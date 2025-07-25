@@ -14,10 +14,8 @@ pipeline {
                 sh '''
                     mkdir -p compare_results
                     cp target/jmeter/results/*.csv compare_results/
-                    docker run --rm \
-                      -v $WORKSPACE:/data \
-                      python:3.11 \
-                      bash -c "pip install pandas matplotlib jinja2 && python /data/compare_tg.py"
+                    pip install --user pandas matplotlib jinja2
+                    python compare_tg.py
                 '''
             }
         }
