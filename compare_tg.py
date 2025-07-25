@@ -2,37 +2,98 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import glob
 import os
+from jinja2 import Template
 
-# 结果文件目录
-result_dir = '/data'  # 容器内路径，和 Docker 挂载一致
+result_dir = '/data/compare_results'
 files = sorted(glob.glob(os.path.join(result_dir, '*.csv')))
+results = []
 
-tg1_avgs = []
-tg2_avgs = []
-builds = []
+for file in files:
+    df = pd.read_csv(file)
+    for tg in ['TG1_HTTP Request', 'TG2_HTTP Request']:
+        tg_df = df[df['label'] == tg]
+        if not tg_df.empty:
+            avg_rt = tg_df['elapsed'].mean()
+            success = tg_df['success'].mean() * 100
+            # 计算 throughput（每秒采样数）
+            if len(tg_df) > 1:
+                duration = (tg_df['timeStamp'].max() - tg_df['timeStamp'].min()) / 1000
+                throughput = len(tg_df) / duration if duration > 0 else 0
+            else:
+                throughput = 0
+            results.append({
+                'file': os.path.basename(file),
+                'tg': tg,
+                'avg_rt': avg_rt,
+                'success': success,
+                'throughput': throughput
+            })
 
-for i, file in enumerate(files):
-    try:
-        df = pd.read_csv(file)
-        # 适配你的 label 名称
-        tg1 = df[df['label'] == 'TG1_HTTP Request']
-        tg2 = df[df['label'] == 'TG2_HTTP Request']
-        tg1_avgs.append(tg1['elapsed'].mean() if not tg1.empty else 0)
-        tg2_avgs.append(tg2['elapsed'].mean() if not tg2.empty else 0)
-        builds.append(f'#{i+1}')
-    except Exception as e:
-        print(f"Error processing {file}: {e}")
+result_df = pd.DataFrame(results)
+if not result_df.empty:
+    for metric, ylabel, title in [
+        ('avg_rt', 'Avg Response Time (ms)', 'Response Time Trend'),
+        ('success', 'Success %', 'Success Rate Trend'),
+        ('throughput', 'Throughput (samples/sec)', 'Throughput Trend')
+    ]:
+        plt.figure(figsize=(12,6))
+        for tg in ['TG1_HTTP Request', 'TG2_HTTP Request']:
+            subset = result_df[result_df['tg'] == tg]
+            plt.plot(subset['file'], subset[metric], marker='o', label=tg)
+        plt.xlabel('Test File')
+        plt.ylabel(ylabel)
+        plt.title(title)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(os.path.join(result_dir, f'{metric}_trend.png'))
+        plt.close()
 
-plt.figure(figsize=(10,6))
-plt.plot(builds, tg1_avgs, marker='o', label='TG1 Avg')
-plt.plot(builds, tg2_avgs, marker='o', label='TG2 Avg')
-plt.xlabel('Build')
-plt.ylabel('Avg Response Time (ms)')
-plt.title('TG1 vs TG2 Avg Response Time Across Builds')
-plt.legend()
-plt.grid(True)
-plt.tight_layout()
-output_path = os.path.join(result_dir, 'compare_results', 'tg_compare.png')
-os.makedirs(os.path.dirname(output_path), exist_ok=True)
-plt.savefig(output_path)
-print('对比图已生成：/data/compare_results/tg_compare.png')
+# 生成 dashboard.html
+dashboard_template = """
+<html>
+<head>
+    <title>JMeter Performance Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        h1 { color: #2c3e50; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 30px; }
+        th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: center; }
+        th { background: #f4f4f4; }
+        img { margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <h1>JMeter Performance Dashboard</h1>
+    <h2>Response Time Trend</h2>
+    <img src="avg_rt_trend.png" width="800">
+    <h2>Success Rate Trend</h2>
+    <img src="success_trend.png" width="800">
+    <h2>Throughput Trend</h2>
+    <img src="throughput_trend.png" width="800">
+    <h2>Raw Data</h2>
+    <table>
+        <tr>
+            <th>Test File</th>
+            <th>Thread Group</th>
+            <th>Avg Response Time (ms)</th>
+            <th>Success %</th>
+            <th>Throughput (samples/sec)</th>
+        </tr>
+        {% for row in rows %}
+        <tr>
+            <td>{{ row.file }}</td>
+            <td>{{ row.tg }}</td>
+            <td>{{ "%.2f"|format(row.avg_rt) }}</td>
+            <td>{{ "%.2f"|format(row.success) }}</td>
+            <td>{{ "%.2f"|format(row.throughput) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+"""
+
+with open(os.path.join(result_dir, 'dashboard.html'), 'w', encoding='utf-8') as f:
+    f.write(Template(dashboard_template).render(rows=results))
+
+print('Dashboard generated: compare_results/dashboard.html')
