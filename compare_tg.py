@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import glob
 import os
 from jinja2 import Template
+import datetime
 
 # result_dir = '/data/compare_results'  # 注释掉这行
 result_dir = 'compare_results'          # 用相对路径
@@ -10,6 +11,16 @@ files = sorted(glob.glob(os.path.join(result_dir, '*.csv')))
 results = []
 
 for file in files:
+    # 假设文件名如 20250722-sample_test.csv
+    base = os.path.basename(file)
+    # 提取日期部分
+    date_part = base.split('-')[0]
+    # 如果你有一天多次测试，可以加上文件的修改时间
+    file_mtime = os.path.getmtime(file)
+    dt = datetime.datetime.fromtimestamp(file_mtime)
+    # 格式化为 日期_时间
+    label = f"{date_part}_{dt.strftime('%H%M')}"
+
     df = pd.read_csv(file)
     for tg in ['TG1_HTTP Request', 'TG2_HTTP Request']:
         tg_df = df[df['label'] == tg]
@@ -23,7 +34,8 @@ for file in files:
             else:
                 throughput = 0
             results.append({
-                'file': os.path.basename(file),
+                'label': label,
+                'file': base,
                 'tg': tg,
                 'avg_rt': avg_rt,
                 'success': success,
@@ -40,8 +52,8 @@ if not result_df.empty:
         plt.figure(figsize=(12,6))
         for tg in ['TG1_HTTP Request', 'TG2_HTTP Request']:
             subset = result_df[result_df['tg'] == tg]
-            plt.plot(subset['file'], subset[metric], marker='o', label=tg)
-        plt.xlabel('Test File')
+            plt.plot(subset['label'], subset[metric], marker='o', label=tg)
+        plt.xlabel('Test Time')
         plt.ylabel(ylabel)
         plt.title(title)
         plt.legend()
