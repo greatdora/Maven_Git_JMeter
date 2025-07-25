@@ -14,7 +14,7 @@ pipeline {
                 sh '''
                     mkdir -p compare_results
                     cp target/jmeter/results/*.csv compare_results/
-                    pip install --user pandas matplotlib jinja2
+                    pip install --user pandas matplotlib jinja2 -i https://pypi.tuna.tsinghua.edu.cn/simple
                     python compare_tg.py
                 '''
             }
