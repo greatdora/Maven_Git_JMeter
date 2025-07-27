@@ -62,11 +62,15 @@ pipeline {
                 keepAll: true,
                 reportDir: 'compare_results',
                 reportFiles: 'dashboard.html',
-                reportName: 'Performance Dashboard'
+                reportName: 'Performance Dashboard',
+                reportTitles: 'JMeter Performance Dashboard',
+                escapeUnderscores: false,
+                includes: '**/*'
             ])
         }
         success {
             echo '构建成功！性能测试完成。'
+            echo 'Dashboard已生成，可在Jenkins中查看Performance Dashboard报告。'
         }
         failure {
             echo '构建失败！请检查JMeter配置和测试环境。'
