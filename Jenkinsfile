@@ -3,6 +3,10 @@ pipeline {
     triggers {
         cron('0 9,12,15,18 * * *') // 每天4次
     }
+    options {
+        // 自动清理构建历史
+        buildDiscarder(logRotator(numToKeepStr: '10', daysToKeepStr: '7'))
+    }
     stages {
         stage('Build & Run JMeter') {
             steps {
@@ -60,6 +64,12 @@ pipeline {
                 reportFiles: 'dashboard.html',
                 reportName: 'Performance Dashboard'
             ])
+        }
+        success {
+            echo '构建成功！性能测试完成。'
+        }
+        failure {
+            echo '构建失败！请检查JMeter配置和测试环境。'
         }
     }
 }
