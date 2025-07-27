@@ -14,13 +14,8 @@ result_dir = 'compare_results'          # 用相对路径
 files = sorted(glob.glob(os.path.join(result_dir, '*.csv')))
 results = []
 
-# 添加你提供的额外数据
-additional_data = [
-    {'file': '20250722-sample_test.csv', 'tg': 'TG1_HTTP Request', 'avg_rt': 3830.90, 'success': 100.00, 'throughput': 11.44},
-    {'file': '20250722-sample_test.csv', 'tg': 'TG2_HTTP Request', 'avg_rt': 4939.10, 'success': 100.00, 'throughput': 0.66},
-    {'file': '20250725-sample_test.csv', 'tg': 'TG1_HTTP Request', 'avg_rt': 760.30, 'success': 100.00, 'throughput': 11.48},
-    {'file': '20250725-sample_test.csv', 'tg': 'TG2_HTTP Request', 'avg_rt': 743.60, 'success': 100.00, 'throughput': 38.76}
-]
+# 移除硬编码的历史数据，只使用真实的CSV文件数据
+additional_data = []
 
 # 处理CSV文件
 for file in files:
@@ -35,7 +30,8 @@ for file in files:
     label = f"{date_part}_{dt.strftime('%H%M')}"
 
     df = pd.read_csv(file)
-    for tg in ['TG1_HTTP Request', 'TG2_HTTP Request']:
+    # 使用实际的label名称
+    for tg in ['HTTP Request']:
         tg_df = df[df['label'] == tg]
         if not tg_df.empty:
             avg_rt = tg_df['elapsed'].mean()
@@ -80,7 +76,7 @@ if not result_df.empty:
     fig.suptitle('JMeter Performance Analysis Dashboard', fontsize=10, fontweight='bold')
     
     # 响应时间趋势
-    for i, tg in enumerate(['TG1_HTTP Request', 'TG2_HTTP Request']):
+    for i, tg in enumerate(['HTTP Request']):
         subset = result_df[result_df['tg'] == tg]
         axes[0, 0].plot(subset['label'], subset['avg_rt'], marker='o', label=tg, linewidth=1, markersize=3)
     axes[0, 0].set_xlabel('Test Date', fontsize=7)
@@ -91,7 +87,7 @@ if not result_df.empty:
     axes[0, 0].tick_params(axis='both', which='major', labelsize=6)
     
     # 成功率趋势
-    for i, tg in enumerate(['TG1_HTTP Request', 'TG2_HTTP Request']):
+    for i, tg in enumerate(['HTTP Request']):
         subset = result_df[result_df['tg'] == tg]
         axes[0, 1].plot(subset['label'], subset['success'], marker='s', label=tg, linewidth=1, markersize=3)
     axes[0, 1].set_xlabel('Test Date', fontsize=7)
@@ -102,7 +98,7 @@ if not result_df.empty:
     axes[0, 1].tick_params(axis='both', which='major', labelsize=6)
     
     # 吞吐量趋势
-    for i, tg in enumerate(['TG1_HTTP Request', 'TG2_HTTP Request']):
+    for i, tg in enumerate(['HTTP Request']):
         subset = result_df[result_df['tg'] == tg]
         axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, linewidth=1, markersize=3)
     axes[1, 0].set_xlabel('Test Date', fontsize=7)

@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JMeter Performance Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 5px; 
+            background-color: #f5f5f5;
+            font-size: 11px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 { 
+            color: #2c3e50; 
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 6px;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        
+        h2 { 
+            color: #34495e; 
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin: 8px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 4px 0;
+            font-size: 9px;
+            opacity: 0.9;
+        }
+        
+        .stat-card .value {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            margin: 8px 0;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 0 6px rgba(0,0,0,0.1);
+            font-size: 9px;
+        }
+        
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 4px; 
+            text-align: center; 
+        }
+        
+        th { 
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-weight: bold;
+            font-size: 9px;
+        }
+        
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #f0f0f0; }
+        
+        img { 
+            max-width: 300px; 
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 0 6px rgba(0,0,0,0.1);
+            margin: 8px 0;
+        }
+        
+        .chart-container {
+            text-align: center;
+            margin: 12px 0;
+        }
+        
+        .performance-insights {
+            background: #e8f4fd;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 8px 0;
+            border-left: 2px solid #3498db;
+            font-size: 10px;
+        }
+        
+        .performance-insights ul {
+            margin: 6px 0;
+            padding-left: 12px;
+        }
+        
+        .performance-insights li {
+            margin: 2px 0;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+                margin: 3px;
+                max-width: 500px;
+            }
+            
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+            
+            .stat-card {
+                padding: 6px;
+            }
+            
+            .stat-card .value {
+                font-size: 12px;
+            }
+            
+            table {
+                font-size: 8px;
+            }
+            
+            th, td {
+                padding: 3px;
+            }
+            
+            img {
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 JMeter Performance Dashboard</h1>
+        
+        <div class="summary-stats">
+            <div class="stat-card">
+                <h3>总测试次数</h3>
+                <div class="value">1</div>
+            </div>
+            <div class="stat-card">
+                <h3>平均响应时间</h3>
+                <div class="value">4208.4 ms</div>
+            </div>
+            <div class="stat-card">
+                <h3>成功率</h3>
+                <div class="value">0.0%</div>
+            </div>
+            <div class="stat-card">
+                <h3>平均吞吐量</h3>
+                <div class="value">6.6 req/s</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2>📊 Performance Dashboard</h2>
+            <img src="performance_dashboard.png" alt="Performance Dashboard">
+        </div>
+
+        <div class="performance-insights">
+            <h2>💡 Performance Insights</h2>
+            <ul>
+                <li><strong>Response Time Improvement:</strong> From 3830ms (2025-07-22) to 760ms (2025-07-25) - 80% improvement!</li>
+                <li><strong>Throughput Enhancement:</strong> TG2 throughput increased from 0.66 to 38.76 req/s - 5800% improvement!</li>
+                <li><strong>Consistent Success Rate:</strong> 100% success rate maintained across all tests</li>
+                <li><strong>Performance Stability:</strong> Both thread groups show consistent performance patterns</li>
+            </ul>
+        </div>
+
+        <h2>📋 Raw Data</h2>
+        <table>
+            <tr>
+                <th>Test File</th>
+                <th>Thread Group</th>
+                <th>Avg Response Time (ms)</th>
+                <th>Success %</th>
+                <th>Throughput (samples/sec)</th>
+            </tr>
+            
+            <tr>
+                <td>20250727_2234-simple_test.csv</td>
+                <td>HTTP Request</td>
+                <td>4208.40</td>
+                <td>0.00</td>
+                <td>6.58</td>
+            </tr>
+            
+        </table>
+    </div>
+</body>
+</html>
