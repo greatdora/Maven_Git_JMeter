@@ -19,18 +19,14 @@ additional_data = []
 
 # 处理CSV文件
 for file in files:
-    # 假设文件名如 20250722-sample_test.csv
+    # 从文件名提取日期
     base = os.path.basename(file)
-    # 提取日期部分
     date_part = base.split('-')[0]
-    # 如果你有一天多次测试，可以加上文件的修改时间
-    file_mtime = os.path.getmtime(file)
-    dt = datetime.datetime.fromtimestamp(file_mtime)
-    # 格式化为 日期_时间
+    dt = datetime.datetime.now()
     label = f"{date_part}_{dt.strftime('%H%M')}"
 
     df = pd.read_csv(file)
-    # 按线程组名称分组，而不是按HTTP请求类型
+    # 按线程组名称分组
     unique_thread_groups = df['threadName'].str.extract(r'(Get_\d+|Post_\d+|Put_\d+)')[0].unique()
     for tg in unique_thread_groups:
         if pd.notna(tg):  # 确保不是NaN
