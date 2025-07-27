@@ -113,6 +113,11 @@
                 <groupId>com.lazerycode.jmeter</groupId>
                 <artifactId>jmeter-maven-plugin</artifactId>
                 <version>3.8.0</version>
+                <configuration>
+                    <resultsFileFormat>csv</resultsFileFormat>
+                    <resultsFileNameDateFormat>yyyyMMdd_HHmm</resultsFileNameDateFormat>
+                    <resultsFileName>sample_test_${maven.build.timestamp}</resultsFileName>
+                </configuration>
                 <executions>
                     <execution>
                         <id>configuration</id>

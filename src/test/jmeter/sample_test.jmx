@@ -141,7 +141,7 @@
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">testusername</stringProp>
+          <stringProp name="username">${USERNAME}</stringProp>
         </JDBCDataSource>
         <hashTree/>
       </hashTree>

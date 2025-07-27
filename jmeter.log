@@ -1,0 +1,20 @@
+2025-07-21 01:08:58,628 INFO o.a.j.u.JMeterUtils: Setting Locale to en
+2025-07-21 01:08:58,640 INFO o.a.j.JMeter: Loading user properties from: /Users/nye/JMeter/apache-jmeter-5.4.1/bin/user.properties
+2025-07-21 01:08:58,640 INFO o.a.j.JMeter: Loading system properties from: /Users/nye/JMeter/apache-jmeter-5.4.1/bin/system.properties
+2025-07-21 01:08:58,643 INFO o.a.j.JMeter: Copyright (c) 1998-2021 The Apache Software Foundation
+2025-07-21 01:08:58,643 INFO o.a.j.JMeter: Version 5.4.1
+2025-07-21 01:08:58,643 INFO o.a.j.JMeter: java.version=17.0.15
+2025-07-21 01:08:58,643 INFO o.a.j.JMeter: java.vm.name=OpenJDK 64-Bit Server VM
+2025-07-21 01:08:58,643 INFO o.a.j.JMeter: os.name=Mac OS X
+2025-07-21 01:08:58,643 INFO o.a.j.JMeter: os.arch=aarch64
+2025-07-21 01:08:58,643 INFO o.a.j.JMeter: os.version=14.6
+2025-07-21 01:08:58,643 INFO o.a.j.JMeter: file.encoding=UTF-8
+2025-07-21 01:08:58,643 INFO o.a.j.JMeter: java.awt.headless=null
+2025-07-21 01:08:58,643 INFO o.a.j.JMeter: Max memory     =1073741824
+2025-07-21 01:08:58,643 INFO o.a.j.JMeter: Available Processors =8
+2025-07-21 01:08:58,648 INFO o.a.j.JMeter: Default Locale=English (EN)
+2025-07-21 01:08:58,648 INFO o.a.j.JMeter: JMeter  Locale=English
+2025-07-21 01:08:58,648 INFO o.a.j.JMeter: JMeterHome=/Users/nye/JMeter/apache-jmeter-5.4.1
+2025-07-21 01:08:58,649 INFO o.a.j.JMeter: user.dir  =/Users/nye/IdeaProjects/Maven_Git_JMeter
+2025-07-21 01:08:58,649 INFO o.a.j.JMeter: PWD       =/Users/nye/IdeaProjects/Maven_Git_JMeter
+2025-07-21 01:08:58,657 INFO o.a.j.JMeter: IP: 192.168.1.123 Name: 192.168.1.123 FullName: 192.168.1.123
