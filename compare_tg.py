@@ -146,14 +146,14 @@ dashboard_template = """
             margin: 0; 
             padding: 5px; 
             background-color: #f5f5f5;
-            font-size: 12px;
+            font-size: 11px;
         }
         
         .container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
             background: white;
-            padding: 15px;
+            padding: 12px;
             border-radius: 6px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
@@ -163,56 +163,56 @@ dashboard_template = """
             text-align: center;
             border-bottom: 2px solid #3498db;
             padding-bottom: 6px;
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 16px;
+            margin-bottom: 12px;
         }
         
         h2 { 
             color: #34495e; 
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-size: 14px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 12px;
         }
         
         .summary-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin: 10px 0;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin: 8px 0;
         }
         
         .stat-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 10px;
+            padding: 8px;
             border-radius: 6px;
             text-align: center;
         }
         
         .stat-card h3 {
-            margin: 0 0 5px 0;
-            font-size: 10px;
+            margin: 0 0 4px 0;
+            font-size: 9px;
             opacity: 0.9;
         }
         
         .stat-card .value {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
         }
         
         table { 
             border-collapse: collapse; 
             width: 100%; 
-            margin: 10px 0;
+            margin: 8px 0;
             border-radius: 4px;
             overflow: hidden;
             box-shadow: 0 0 6px rgba(0,0,0,0.1);
-            font-size: 10px;
+            font-size: 9px;
         }
         
         th, td { 
             border: 1px solid #ddd; 
-            padding: 6px; 
+            padding: 4px; 
             text-align: center; 
         }
         
@@ -220,196 +220,80 @@ dashboard_template = """
             background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
             font-weight: bold;
-            font-size: 10px;
+            font-size: 9px;
         }
         
         tr:nth-child(even) { background-color: #f9f9f9; }
         tr:hover { background-color: #f0f0f0; }
         
         img { 
-            max-width: 400px; 
+            max-width: 300px; 
             height: auto;
             border-radius: 4px;
             box-shadow: 0 0 6px rgba(0,0,0,0.1);
-            margin: 10px 0;
-        }
-        
-        .compact-mode img {
-            max-width: 300px;
-        }
-        
-        .ultra-compact img {
-            max-width: 250px;
+            margin: 8px 0;
         }
         
         .chart-container {
             text-align: center;
-            margin: 15px 0;
+            margin: 12px 0;
         }
         
         .performance-insights {
             background: #e8f4fd;
-            padding: 10px;
+            padding: 8px;
             border-radius: 4px;
-            margin: 10px 0;
+            margin: 8px 0;
             border-left: 2px solid #3498db;
-            font-size: 11px;
+            font-size: 10px;
         }
         
         .performance-insights ul {
-            margin: 8px 0;
-            padding-left: 15px;
+            margin: 6px 0;
+            padding-left: 12px;
         }
         
         .performance-insights li {
-            margin: 3px 0;
+            margin: 2px 0;
         }
         
         /* 响应式设计 */
         @media (max-width: 768px) {
             .container {
-                padding: 10px;
+                padding: 8px;
                 margin: 3px;
+                max-width: 500px;
             }
             
             .summary-stats {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
+                gap: 6px;
             }
             
             .stat-card {
-                padding: 8px;
+                padding: 6px;
             }
             
             .stat-card .value {
-                font-size: 14px;
+                font-size: 12px;
             }
             
             table {
-                font-size: 9px;
+                font-size: 8px;
             }
             
             th, td {
-                padding: 4px;
+                padding: 3px;
             }
-        }
-        
-        /* 紧凑模式 */
-        .compact-mode {
-            font-size: 10px;
-        }
-        
-        .compact-mode .container {
-            padding: 10px;
-            max-width: 600px;
-        }
-        
-        .compact-mode h1 {
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        
-        .compact-mode h2 {
-            font-size: 12px;
-            margin-top: 15px;
-        }
-        
-        .compact-mode .summary-stats {
-            gap: 8px;
-        }
-        
-        .compact-mode .stat-card {
-            padding: 8px;
-        }
-        
-        .compact-mode .stat-card .value {
-            font-size: 14px;
-        }
-        
-        .compact-mode .performance-insights {
-            padding: 8px;
-            font-size: 10px;
-        }
-        
-        /* 添加切换按钮 */
-        .toggle-container {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        
-        .toggle-btn {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 10px;
-            margin: 0 3px;
-        }
-        
-        .toggle-btn:hover {
-            background: #2980b9;
-        }
-        
-        .toggle-btn.active {
-            background: #27ae60;
-        }
-        
-        /* 超紧凑模式 */
-        .ultra-compact {
-            font-size: 9px;
-        }
-        
-        .ultra-compact .container {
-            padding: 8px;
-            max-width: 500px;
-        }
-        
-        .ultra-compact h1 {
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-        
-        .ultra-compact h2 {
-            font-size: 11px;
-            margin-top: 12px;
-        }
-        
-        .ultra-compact .summary-stats {
-            gap: 6px;
-        }
-        
-        .ultra-compact .stat-card {
-            padding: 6px;
-        }
-        
-        .ultra-compact .stat-card .value {
-            font-size: 12px;
-        }
-        
-        .ultra-compact table {
-            font-size: 8px;
-        }
-        
-        .ultra-compact th, .ultra-compact td {
-            padding: 3px;
-        }
-        
-        .ultra-compact .performance-insights {
-            padding: 6px;
-            font-size: 9px;
+            
+            img {
+                max-width: 250px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="toggle-container">
-            <button class="toggle-btn active" onclick="toggleMode('normal')">标准</button>
-            <button class="toggle-btn" onclick="toggleMode('compact')">紧凑</button>
-            <button class="toggle-btn" onclick="toggleMode('ultra')">超紧凑</button>
-        </div>
-        
         <h1>🚀 JMeter Performance Dashboard</h1>
         
         <div class="summary-stats">
@@ -433,7 +317,7 @@ dashboard_template = """
 
         <div class="chart-container">
             <h2>📊 Performance Dashboard</h2>
-            <img src="performance_dashboard.png" alt="Performance Dashboard" style="max-width: 400px; height: auto;">
+            <img src="performance_dashboard.png" alt="Performance Dashboard">
         </div>
 
         <div class="performance-insights">
@@ -466,45 +350,6 @@ dashboard_template = """
             {% endfor %}
         </table>
     </div>
-    
-    <script>
-        function toggleMode(mode) {
-            const body = document.body;
-            const buttons = document.querySelectorAll('.toggle-btn');
-            
-            // 移除所有模式类
-            body.classList.remove('compact-mode', 'ultra-compact');
-            
-            // 移除所有按钮的active类
-            buttons.forEach(btn => btn.classList.remove('active'));
-            
-            // 添加选中的模式
-            if (mode === 'compact') {
-                body.classList.add('compact-mode');
-                buttons[1].classList.add('active');
-            } else if (mode === 'ultra') {
-                body.classList.add('ultra-compact');
-                buttons[2].classList.add('active');
-            } else {
-                buttons[0].classList.add('active');
-            }
-        }
-        
-        // 自动检测窗口大小并调整
-        function adjustLayout() {
-            if (window.innerWidth < 600) {
-                toggleMode('ultra');
-            } else if (window.innerWidth < 900) {
-                toggleMode('compact');
-            } else {
-                toggleMode('normal');
-            }
-        }
-        
-        // 页面加载时调整
-        window.addEventListener('load', adjustLayout);
-        window.addEventListener('resize', adjustLayout);
-    </script>
 </body>
 </html>
 """
