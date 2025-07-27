@@ -11,7 +11,7 @@ pipeline {
                 ]) {
                     sh '''
                         export NOW=$(date +%Y%m%d_%H%M)
-                        mvn clean verify -Djmeter.result.file.name=sample_test_$NOW -JUSERNAME=$USERNAME -JPASSWORD=$PASSWORD
+                        mvn clean verify -Djmeter.result.file.name=sample_test_$NOW -DUSERNAME=$USERNAME -DPASSWORD=$PASSWORD
                     '''
                 }
             }
