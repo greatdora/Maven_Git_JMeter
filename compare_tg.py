@@ -365,19 +365,19 @@ dashboard_template = """
         
         <div class="stats">
             <div class="stat-card">
-                <div class="stat-value">{total_runs}</div>
+                <div class="stat-value">{{ total_runs }}</div>
                 <div>测试运行次数</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">{avg_response_time:.1f} ms</div>
+                <div class="stat-value">{{ "%.1f"|format(avg_response_time) }} ms</div>
                 <div>平均响应时间</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">{avg_success_rate:.1f}%</div>
+                <div class="stat-value">{{ "%.1f"|format(avg_success_rate) }}%</div>
                 <div>平均成功率</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">{avg_throughput:.1f} req/s</div>
+                <div class="stat-value">{{ "%.1f"|format(avg_throughput) }} req/s</div>
                 <div>平均吞吐量</div>
             </div>
         </div>
@@ -385,10 +385,10 @@ dashboard_template = """
         <div class="insights">
             <h4>性能分析洞察</h4>
             <ul>
-                <li>响应时间分析：{response_time_insight}</li>
-                <li>成功率分析：{success_rate_insight}</li>
-                <li>吞吐量分析：{throughput_insight}</li>
-                <li>建议：{recommendation}</li>
+                <li>响应时间分析：{{ response_time_insight }}</li>
+                <li>成功率分析：{{ success_rate_insight }}</li>
+                <li>吞吐量分析：{{ throughput_insight }}</li>
+                <li>建议：{{ recommendation }}</li>
             </ul>
         </div>
     </div>
@@ -409,16 +409,16 @@ dashboard_template = """
                 .filter(cb => cb.checked)
                 .map(cb => cb.value);
             
+            console.log('updateDisplay called, selected groups:', selectedGroups);
+            
             if (selectedGroups.length === 0) {
                 dashboardImage.classList.add('hidden');
                 noDataOverlay.style.display = 'block';
+                console.log('No groups selected, hiding image');
             } else {
                 dashboardImage.classList.remove('hidden');
                 noDataOverlay.style.display = 'none';
-                
-                // 这里可以添加动态更新图表的逻辑
-                // 目前显示完整图表，实际项目中可以发送AJAX请求获取过滤后的数据
-                console.log('选中的线程组:', selectedGroups);
+                console.log('Groups selected, showing image');
             }
         }
         
