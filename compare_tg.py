@@ -136,6 +136,134 @@ if not result_df.empty:
     plt.tight_layout()
     plt.savefig(os.path.join(result_dir, 'performance_dashboard.png'), dpi=120, bbox_inches='tight')
     plt.close()
+    
+    # 生成过滤的图表
+    print("生成过滤的图表...")
+    
+    # 生成不同过滤的图表
+    def generate_filtered_chart(result_df, selected_groups, result_dir):
+        """根据选中的线程组生成过滤后的图表"""
+        if result_df.empty or not selected_groups:
+            return None
+        
+        # 过滤数据
+        filtered_df = result_df[result_df['tg'].isin(selected_groups)]
+        
+        if filtered_df.empty:
+            return None
+        
+        # 创建图表
+        fig, axes = plt.subplots(2, 2, figsize=(8, 6))
+        fig.suptitle(f'JMeter Performance Analysis - {", ".join(selected_groups)}', fontsize=10, fontweight='bold')
+        
+        # 按HTTP方法分组颜色
+        colors = {'Get_01': 'blue', 'Get_02': 'lightblue', 
+                  'Post_01': 'green', 'Post_02': 'lightgreen',
+                  'Put_01': 'red', 'Put_02': 'pink'}
+        
+        # 响应时间趋势
+        for tg in selected_groups:
+            subset = filtered_df[filtered_df['tg'] == tg]
+            color = colors.get(tg, 'gray')
+            axes[0, 0].plot(subset['label'], subset['avg_rt'], marker='o', label=tg, 
+                            linewidth=1, markersize=3, color=color)
+        axes[0, 0].set_xlabel('Test Date', fontsize=7)
+        axes[0, 0].set_ylabel('Average Response Time (ms)', fontsize=7)
+        axes[0, 0].set_title('Response Time Trend', fontsize=8)
+        axes[0, 0].legend(fontsize=6)
+        axes[0, 0].grid(True, alpha=0.3)
+        axes[0, 0].tick_params(axis='both', which='major', labelsize=6)
+        
+        # 成功率趋势
+        for tg in selected_groups:
+            subset = filtered_df[filtered_df['tg'] == tg]
+            color = colors.get(tg, 'gray')
+            axes[0, 1].plot(subset['label'], subset['success'], marker='s', label=tg, 
+                            linewidth=1, markersize=3, color=color)
+        axes[0, 1].set_xlabel('Test Date', fontsize=7)
+        axes[0, 1].set_ylabel('Success Rate (%)', fontsize=7)
+        axes[0, 1].set_title('Success Rate Trend', fontsize=8)
+        axes[0, 1].legend(fontsize=6)
+        axes[0, 1].grid(True, alpha=0.3)
+        axes[0, 1].tick_params(axis='both', which='major', labelsize=6)
+        
+        # 吞吐量趋势
+        for tg in selected_groups:
+            subset = filtered_df[filtered_df['tg'] == tg]
+            color = colors.get(tg, 'gray')
+            axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, 
+                            linewidth=1, markersize=3, color=color)
+        axes[1, 0].set_xlabel('Test Date', fontsize=7)
+        axes[1, 0].set_ylabel('Throughput (samples/sec)', fontsize=7)
+        axes[1, 0].set_title('Throughput Trend', fontsize=8)
+        axes[1, 0].legend(fontsize=6)
+        axes[1, 0].grid(True, alpha=0.3)
+        axes[1, 0].tick_params(axis='both', which='major', labelsize=6)
+        
+        # 性能对比柱状图
+        latest_data = filtered_df.groupby('tg').last()
+        x = range(len(latest_data))
+        axes[1, 1].bar([i-0.2 for i in x], latest_data['avg_rt'], width=0.4, label='Response Time (ms)', alpha=0.7)
+        axes[1, 1].set_xlabel('Thread Groups', fontsize=7)
+        axes[1, 1].set_ylabel('Response Time (ms)', fontsize=7)
+        axes[1, 1].set_title('Latest Performance Comparison', fontsize=8)
+        axes[1, 1].set_xticks(x)
+        axes[1, 1].set_xticklabels(latest_data.index, rotation=45, fontsize=6)
+        axes[1, 1].legend(fontsize=6)
+        axes[1, 1].grid(True, alpha=0.3)
+        axes[1, 1].tick_params(axis='both', which='major', labelsize=6)
+        
+        plt.tight_layout()
+        
+        # 生成文件名
+        groups_str = '_'.join(selected_groups).replace(' ', '_')
+        filename = f'performance_dashboard_{groups_str}.png'
+        filepath = os.path.join(result_dir, filename)
+        
+        plt.savefig(filepath, dpi=120, bbox_inches='tight')
+        plt.close()
+        
+        return filename
+    
+    # 生成所有可能的过滤图表
+    def generate_all_filtered_charts(result_df, result_dir):
+        """生成所有可能的过滤图表组合"""
+        all_groups = result_df['tg'].unique().tolist()
+        chart_files = {}
+        
+        # 生成单个线程组的图表
+        for group in all_groups:
+            filename = generate_filtered_chart(result_df, [group], result_dir)
+            if filename:
+                chart_files[group] = filename
+        
+        # 生成GET组合的图表
+        get_groups = [g for g in all_groups if g.startswith('Get')]
+        if len(get_groups) > 1:
+            filename = generate_filtered_chart(result_df, get_groups, result_dir)
+            if filename:
+                chart_files['Get_Only'] = filename
+        
+        # 生成POST组合的图表
+        post_groups = [g for g in all_groups if g.startswith('Post')]
+        if len(post_groups) > 1:
+            filename = generate_filtered_chart(result_df, post_groups, result_dir)
+            if filename:
+                chart_files['Post_Only'] = filename
+        
+        # 生成PUT组合的图表
+        put_groups = [g for g in all_groups if g.startswith('Put')]
+        if len(put_groups) > 1:
+            filename = generate_filtered_chart(result_df, put_groups, result_dir)
+            if filename:
+                chart_files['Put_Only'] = filename
+        
+        return chart_files
+    
+    filtered_charts = generate_all_filtered_charts(result_df, result_dir)
+    print(f"生成了 {len(filtered_charts)} 个过滤图表")
+
+
 
 # 生成 dashboard.html
 dashboard_template = """
@@ -313,6 +441,17 @@ dashboard_template = """
             color: #666;
             display: none;
         }
+        
+        .selection-status {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            border-radius: 4px;
+            padding: 8px;
+            margin: 8px 0;
+            font-size: 11px;
+            color: #27ae60;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -354,6 +493,10 @@ dashboard_template = """
                 <button class="btn" onclick="selectPostOnly()">仅POST</button>
                 <button class="btn" onclick="selectPutOnly()">仅PUT</button>
             </div>
+        </div>
+        
+        <div class="selection-status" id="selectionStatus">
+            <strong>当前显示:</strong> 所有线程组
         </div>
         
         <div class="chart-container">
@@ -398,6 +541,7 @@ dashboard_template = """
         const checkboxes = document.querySelectorAll('#threadGroupSelectors input[type="checkbox"]');
         const dashboardImage = document.getElementById('dashboardImage');
         const noDataOverlay = document.getElementById('noDataOverlay');
+        const selectionStatus = document.getElementById('selectionStatus');
         
         // 监听复选框变化
         checkboxes.forEach(checkbox => {
@@ -414,11 +558,19 @@ dashboard_template = """
             if (selectedGroups.length === 0) {
                 dashboardImage.classList.add('hidden');
                 noDataOverlay.style.display = 'block';
+                selectionStatus.style.display = 'none';
                 console.log('No groups selected, hiding image');
             } else {
                 dashboardImage.classList.remove('hidden');
                 noDataOverlay.style.display = 'none';
-                console.log('Groups selected, showing image');
+                selectionStatus.style.display = 'block';
+                console.log('Groups selected, showing filtered image');
+                
+                // 更新状态显示
+                selectionStatus.innerHTML = `<strong>当前显示:</strong> ${selectedGroups.join(', ')}`;
+                
+                // 动态更新图表
+                updateChartImage(selectedGroups);
             }
         }
         
@@ -451,6 +603,40 @@ dashboard_template = """
                 cb.checked = cb.value.startsWith('Put');
             });
             updateDisplay();
+        }
+        
+        function updateChartImage(selectedGroups) {
+            // 根据选中的线程组选择对应的图表
+            let chartFile = 'performance_dashboard.png'; // 默认显示全部
+            
+            if (selectedGroups.length === 1) {
+                // 单个线程组
+                const group = selectedGroups[0];
+                chartFile = `performance_dashboard_${group}.png`;
+            } else if (selectedGroups.length === 2) {
+                // 检查是否是GET、POST或PUT组合
+                const isGetOnly = selectedGroups.every(g => g.startsWith('Get'));
+                const isPostOnly = selectedGroups.every(g => g.startsWith('Post'));
+                const isPutOnly = selectedGroups.every(g => g.startsWith('Put'));
+                
+                if (isGetOnly) {
+                    chartFile = 'performance_dashboard_Get_Only.png';
+                } else if (isPostOnly) {
+                    chartFile = 'performance_dashboard_Post_Only.png';
+                } else if (isPutOnly) {
+                    chartFile = 'performance_dashboard_Put_Only.png';
+                }
+            }
+            
+            // 更新图表
+            const timestamp = new Date().getTime();
+            dashboardImage.src = chartFile + '?t=' + timestamp;
+            
+            // 如果图表加载失败，回退到默认图表
+            dashboardImage.onerror = function() {
+                console.log('Filtered chart not found, using default chart');
+                dashboardImage.src = 'performance_dashboard.png?t=' + timestamp;
+            };
         }
         
         // 初始化显示
