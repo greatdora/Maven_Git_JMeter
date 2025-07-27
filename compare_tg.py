@@ -30,27 +30,28 @@ for file in files:
     label = f"{date_part}_{dt.strftime('%H%M')}"
 
     df = pd.read_csv(file)
-    # 动态检测所有不同的请求名称
-    unique_labels = df['label'].unique()
-    for tg in unique_labels:
-        tg_df = df[df['label'] == tg]
-        if not tg_df.empty:
-            avg_rt = tg_df['elapsed'].mean()
-            success = tg_df['success'].mean() * 100
-            # 计算 throughput（每秒采样数）
-            if len(tg_df) > 1:
-                duration = (tg_df['timeStamp'].max() - tg_df['timeStamp'].min()) / 1000
-                throughput = len(tg_df) / duration if duration > 0 else 0
-            else:
-                throughput = 0
-            results.append({
-                'label': label,
-                'file': base,
-                'tg': tg,
-                'avg_rt': avg_rt,
-                'success': success,
-                'throughput': throughput
-            })
+    # 按线程组名称分组，而不是按HTTP请求类型
+    unique_thread_groups = df['threadName'].str.extract(r'(Get_\d+|Post_\d+|Put_\d+)')[0].unique()
+    for tg in unique_thread_groups:
+        if pd.notna(tg):  # 确保不是NaN
+            tg_df = df[df['threadName'].str.contains(tg, na=False)]
+            if not tg_df.empty:
+                avg_rt = tg_df['elapsed'].mean()
+                success = tg_df['success'].mean() * 100
+                # 计算 throughput（每秒采样数）
+                if len(tg_df) > 1:
+                    duration = (tg_df['timeStamp'].max() - tg_df['timeStamp'].min()) / 1000
+                    throughput = len(tg_df) / duration if duration > 0 else 0
+                else:
+                    throughput = 0
+                results.append({
+                    'label': label,
+                    'file': base,
+                    'tg': tg,
+                    'avg_rt': avg_rt,
+                    'success': success,
+                    'throughput': throughput
+                })
 
 # 添加额外数据
 for data in additional_data:
@@ -76,13 +77,20 @@ if not result_df.empty:
     fig, axes = plt.subplots(2, 2, figsize=(8, 6))
     fig.suptitle('JMeter Performance Analysis Dashboard', fontsize=10, fontweight='bold')
     
-    # 获取所有唯一的请求名称
-    unique_requests = result_df['tg'].unique()
+    # 获取所有唯一的线程组名称
+    unique_thread_groups = result_df['tg'].unique()
+    
+    # 按HTTP方法分组颜色
+    colors = {'Get_01': 'blue', 'Get_02': 'lightblue', 
+              'Post_01': 'green', 'Post_02': 'lightgreen',
+              'Put_01': 'red', 'Put_02': 'pink'}
     
     # 响应时间趋势
-    for tg in unique_requests:
+    for tg in unique_thread_groups:
         subset = result_df[result_df['tg'] == tg]
-        axes[0, 0].plot(subset['label'], subset['avg_rt'], marker='o', label=tg, linewidth=1, markersize=3)
+        color = colors.get(tg, 'gray')
+        axes[0, 0].plot(subset['label'], subset['avg_rt'], marker='o', label=tg, 
+                        linewidth=1, markersize=3, color=color)
     axes[0, 0].set_xlabel('Test Date', fontsize=7)
     axes[0, 0].set_ylabel('Average Response Time (ms)', fontsize=7)
     axes[0, 0].set_title('Response Time Trend', fontsize=8)
@@ -91,9 +99,11 @@ if not result_df.empty:
     axes[0, 0].tick_params(axis='both', which='major', labelsize=6)
     
     # 成功率趋势
-    for tg in unique_requests:
+    for tg in unique_thread_groups:
         subset = result_df[result_df['tg'] == tg]
-        axes[0, 1].plot(subset['label'], subset['success'], marker='s', label=tg, linewidth=1, markersize=3)
+        color = colors.get(tg, 'gray')
+        axes[0, 1].plot(subset['label'], subset['success'], marker='s', label=tg, 
+                        linewidth=1, markersize=3, color=color)
     axes[0, 1].set_xlabel('Test Date', fontsize=7)
     axes[0, 1].set_ylabel('Success Rate (%)', fontsize=7)
     axes[0, 1].set_title('Success Rate Trend', fontsize=8)
@@ -102,9 +112,11 @@ if not result_df.empty:
     axes[0, 1].tick_params(axis='both', which='major', labelsize=6)
     
     # 吞吐量趋势
-    for tg in unique_requests:
+    for tg in unique_thread_groups:
         subset = result_df[result_df['tg'] == tg]
-        axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, linewidth=1, markersize=3)
+        color = colors.get(tg, 'gray')
+        axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, 
+                        linewidth=1, markersize=3, color=color)
     axes[1, 0].set_xlabel('Test Date', fontsize=7)
     axes[1, 0].set_ylabel('Throughput (samples/sec)', fontsize=7)
     axes[1, 0].set_title('Throughput Trend', fontsize=8)
