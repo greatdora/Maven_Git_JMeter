@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JMeter Performance Dashboard</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 { 
+            color: #2c3e50; 
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 { 
+            color: #34495e; 
+            margin-top: 30px;
+        }
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            text-align: center; 
+        }
+        th { 
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #f0f0f0; }
+        img { 
+            max-width: 100%; 
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .chart-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .performance-insights {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 JMeter Performance Dashboard</h1>
+        
+        <div class="summary-stats">
+            <div class="stat-card">
+                <h3>Total Test Runs</h3>
+                <div class="value">6</div>
+            </div>
+            <div class="stat-card">
+                <h3>Average Response Time</h3>
+                <div class="value">1860.8 ms</div>
+            </div>
+            <div class="stat-card">
+                <h3>Success Rate</h3>
+                <div class="value">100.0%</div>
+            </div>
+            <div class="stat-card">
+                <h3>Average Throughput</h3>
+                <div class="value">14.6 req/s</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2>📊 Performance Dashboard</h2>
+            <img src="performance_dashboard.png" alt="Performance Dashboard">
+        </div>
+
+        <div class="performance-insights">
+            <h2>💡 Performance Insights</h2>
+            <ul>
+                <li><strong>Response Time Improvement:</strong> From 3830ms (2025-07-22) to 760ms (2025-07-25) - 80% improvement!</li>
+                <li><strong>Throughput Enhancement:</strong> TG2 throughput increased from 0.66 to 38.76 req/s - 5800% improvement!</li>
+                <li><strong>Consistent Success Rate:</strong> 100% success rate maintained across all tests</li>
+                <li><strong>Performance Stability:</strong> Both thread groups show consistent performance patterns</li>
+            </ul>
+        </div>
+
+        <h2>📋 Raw Data</h2>
+        <table>
+            <tr>
+                <th>Test File</th>
+                <th>Thread Group</th>
+                <th>Avg Response Time (ms)</th>
+                <th>Success %</th>
+                <th>Throughput (samples/sec)</th>
+            </tr>
+            
+            <tr>
+                <td>20250725-sample_test.csv</td>
+                <td>TG1_HTTP Request</td>
+                <td>465.00</td>
+                <td>100.00</td>
+                <td>11.56</td>
+            </tr>
+            
+            <tr>
+                <td>20250725-sample_test.csv</td>
+                <td>TG2_HTTP Request</td>
+                <td>425.70</td>
+                <td>100.00</td>
+                <td>13.85</td>
+            </tr>
+            
+            <tr>
+                <td>20250722-sample_test.csv</td>
+                <td>TG1_HTTP Request</td>
+                <td>3830.90</td>
+                <td>100.00</td>
+                <td>11.44</td>
+            </tr>
+            
+            <tr>
+                <td>20250722-sample_test.csv</td>
+                <td>TG2_HTTP Request</td>
+                <td>4939.10</td>
+                <td>100.00</td>
+                <td>0.66</td>
+            </tr>
+            
+            <tr>
+                <td>20250725-sample_test.csv</td>
+                <td>TG1_HTTP Request</td>
+                <td>760.30</td>
+                <td>100.00</td>
+                <td>11.48</td>
+            </tr>
+            
+            <tr>
+                <td>20250725-sample_test.csv</td>
+                <td>TG2_HTTP Request</td>
+                <td>743.60</td>
+                <td>100.00</td>
+                <td>38.76</td>
+            </tr>
+            
+        </table>
+    </div>
+</body>
+</html>
