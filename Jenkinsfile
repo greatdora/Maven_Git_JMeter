@@ -7,8 +7,8 @@ pipeline {
         stage('Build & Run JMeter') {
             steps {
                 withCredentials([
-                    string(credentialsId: 'JMETER_USERNAME', variable: 'USERNAME'),
-                    string(credentialsId: 'JMETER_PASSWORD', variable: 'PASSWORD')
+                    string(credentialsId: 'testCredential', variable: 'USERNAME'),
+                    string(credentialsId: 'testCredential', variable: 'PASSWORD')
                 ]) {
                     sh '''
                         export NOW=$(date +%Y%m%d_%H%M)
