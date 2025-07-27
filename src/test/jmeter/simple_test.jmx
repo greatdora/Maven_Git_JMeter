@@ -32,7 +32,7 @@
           </elementProp>
           <stringProp name="HTTPSampler.domain">httpbin.org</stringProp>
           <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/get</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -51,7 +51,7 @@
           </elementProp>
           <stringProp name="HTTPSampler.domain">httpbin.org</stringProp>
           <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/post</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -70,7 +70,7 @@
           </elementProp>
           <stringProp name="HTTPSampler.domain">httpbin.org</stringProp>
           <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/put</stringProp>
           <stringProp name="HTTPSampler.method">PUT</stringProp>
