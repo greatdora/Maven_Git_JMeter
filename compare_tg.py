@@ -30,8 +30,9 @@ for file in files:
     label = f"{date_part}_{dt.strftime('%H%M')}"
 
     df = pd.read_csv(file)
-    # 使用实际的label名称
-    for tg in ['HTTP Request']:
+    # 动态检测所有不同的请求名称
+    unique_labels = df['label'].unique()
+    for tg in unique_labels:
         tg_df = df[df['label'] == tg]
         if not tg_df.empty:
             avg_rt = tg_df['elapsed'].mean()
@@ -75,8 +76,11 @@ if not result_df.empty:
     fig, axes = plt.subplots(2, 2, figsize=(8, 6))
     fig.suptitle('JMeter Performance Analysis Dashboard', fontsize=10, fontweight='bold')
     
+    # 获取所有唯一的请求名称
+    unique_requests = result_df['tg'].unique()
+    
     # 响应时间趋势
-    for i, tg in enumerate(['HTTP Request']):
+    for tg in unique_requests:
         subset = result_df[result_df['tg'] == tg]
         axes[0, 0].plot(subset['label'], subset['avg_rt'], marker='o', label=tg, linewidth=1, markersize=3)
     axes[0, 0].set_xlabel('Test Date', fontsize=7)
@@ -87,7 +91,7 @@ if not result_df.empty:
     axes[0, 0].tick_params(axis='both', which='major', labelsize=6)
     
     # 成功率趋势
-    for i, tg in enumerate(['HTTP Request']):
+    for tg in unique_requests:
         subset = result_df[result_df['tg'] == tg]
         axes[0, 1].plot(subset['label'], subset['success'], marker='s', label=tg, linewidth=1, markersize=3)
     axes[0, 1].set_xlabel('Test Date', fontsize=7)
@@ -98,7 +102,7 @@ if not result_df.empty:
     axes[0, 1].tick_params(axis='both', which='major', labelsize=6)
     
     # 吞吐量趋势
-    for i, tg in enumerate(['HTTP Request']):
+    for tg in unique_requests:
         subset = result_df[result_df['tg'] == tg]
         axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, linewidth=1, markersize=3)
     axes[1, 0].set_xlabel('Test Date', fontsize=7)

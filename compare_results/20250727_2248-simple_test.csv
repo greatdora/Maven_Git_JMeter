@@ -1,0 +1,16 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1753627680847,1781,GET Request,200,OK,Thread Group 1-1,text,true,,491,116,5,5,https://httpbin.org/get,1777,0,9
+1753627681214,1888,GET Request,200,OK,Thread Group 1-3,text,true,,491,116,5,5,https://httpbin.org/get,1888,0,0
+1753627681014,2496,GET Request,200,OK,Thread Group 1-2,text,true,,491,116,5,5,https://httpbin.org/get,2496,0,0
+1753627681615,1896,GET Request,200,OK,Thread Group 1-5,text,true,,491,116,5,5,https://httpbin.org/get,1896,0,1
+1753627683103,554,POST Request,200,OK,Thread Group 1-3,text,true,,656,201,5,5,https://httpbin.org/post,554,0,0
+1753627682634,1131,POST Request,200,OK,Thread Group 1-1,text,true,,656,201,5,5,https://httpbin.org/post,1131,0,0
+1753627683511,468,POST Request,200,OK,Thread Group 1-5,text,true,,656,201,5,5,https://httpbin.org/post,468,0,0
+1753627683658,447,PUT Request,200,OK,Thread Group 1-3,text,true,,655,199,5,5,https://httpbin.org/put,447,0,0
+1753627683766,451,PUT Request,200,OK,Thread Group 1-1,text,true,,655,199,4,4,https://httpbin.org/put,451,0,0
+1753627683510,923,POST Request,200,OK,Thread Group 1-2,text,true,,656,201,3,3,https://httpbin.org/post,923,0,0
+1753627681415,3035,GET Request,200,OK,Thread Group 1-4,text,true,,491,116,3,3,https://httpbin.org/get,3035,0,1
+1753627683980,471,PUT Request,200,OK,Thread Group 1-5,text,true,,655,199,3,3,https://httpbin.org/put,471,0,0
+1753627684433,401,PUT Request,200,OK,Thread Group 1-2,text,true,,655,199,2,2,https://httpbin.org/put,401,0,0
+1753627684451,556,POST Request,200,OK,Thread Group 1-4,text,true,,656,201,1,1,https://httpbin.org/post,556,0,0
+1753627685008,540,PUT Request,200,OK,Thread Group 1-4,text,true,,655,199,1,1,https://httpbin.org/put,540,0,0
