@@ -116,7 +116,9 @@
                 <configuration>
                     <resultsFileFormat>csv</resultsFileFormat>
                     <resultsFileNameDateFormat>yyyyMMdd_HHmm</resultsFileNameDateFormat>
-                    <resultsFileName>sample_test_${maven.build.timestamp}</resultsFileName>
+                    <resultsFileName>sample_test</resultsFileName>
+                    <generateReports>true</generateReports>
+                    <testResultsTimestamp>true</testResultsTimestamp>
                 </configuration>
                 <executions>
                     <execution>
