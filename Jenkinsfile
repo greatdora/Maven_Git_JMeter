@@ -27,25 +27,31 @@ pipeline {
                     export TODAY=$(date +%Y%m%d)
                     mkdir -p compare_results
                     
-                    # 尝试多种可能的文件名格式
-                    if [ -f "target/jmeter/results/sample_test_$NOW.csv" ]; then
-                        cp target/jmeter/results/sample_test_$NOW.csv compare_results/
-                        echo "Found file: sample_test_$NOW.csv"
-                    elif [ -f "target/jmeter/results/$TODAY-sample_test.csv" ]; then
-                        cp target/jmeter/results/$TODAY-sample_test.csv compare_results/
-                        echo "Found file: $TODAY-sample_test.csv"
+                    # 查找JMeter生成的结果文件
+                    echo "查找JMeter结果文件..."
+                    
+                    # 方法1: 查找最新的CSV文件（JMeter插件生成的位置）
+                    LATEST_CSV=$(find target -name "*.csv" -type f -path "*/jmeter/bin/*" | xargs ls -t | head -1)
+                    if [ -n "$LATEST_CSV" ] && [ -f "$LATEST_CSV" ]; then
+                        cp "$LATEST_CSV" compare_results/
+                        echo "Found JMeter result file: $LATEST_CSV"
                     else
-                        # 查找最新的CSV文件
-                        LATEST_CSV=$(find target/jmeter/results -name "*.csv" -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -d' ' -f2-)
-                        if [ -n "$LATEST_CSV" ]; then
+                        # 方法2: 查找其他可能的CSV文件
+                        LATEST_CSV=$(find target -name "*.csv" -type f | xargs ls -t | head -1)
+                        if [ -n "$LATEST_CSV" ] && [ -f "$LATEST_CSV" ]; then
                             cp "$LATEST_CSV" compare_results/
-                            echo "Found latest CSV file: $LATEST_CSV"
+                            echo "Found CSV file: $LATEST_CSV"
                         else
-                            echo "No CSV files found in target/jmeter/results/"
-                            ls -la target/jmeter/results/ || echo "No results directory found"
-                            find target -name "*.csv" -o -name "*.jtl" || echo "No result files found"
+                            echo "No CSV files found in target directory"
+                            echo "Checking target directory structure:"
+                            find target -type d -name "jmeter" 2>/dev/null || echo "No jmeter directories found"
+                            find target -name "*.csv" 2>/dev/null || echo "No CSV files found"
                         fi
                     fi
+                    
+                    # 显示找到的文件
+                    echo "Files in compare_results directory:"
+                    ls -la compare_results/ || echo "compare_results directory is empty"
                     
                     pip3 install --user pandas matplotlib jinja2 -i https://pypi.tuna.tsinghua.edu.cn/simple
                     python3 compare_tg.py
