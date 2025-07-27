@@ -76,57 +76,57 @@ result_df = result_df.sort_values('date')
 
 if not result_df.empty:
     # 创建图表
-    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-    fig.suptitle('JMeter Performance Analysis Dashboard', fontsize=14, fontweight='bold')
+    fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+    fig.suptitle('JMeter Performance Analysis Dashboard', fontsize=12, fontweight='bold')
     
     # 响应时间趋势
     for i, tg in enumerate(['TG1_HTTP Request', 'TG2_HTTP Request']):
         subset = result_df[result_df['tg'] == tg]
-        axes[0, 0].plot(subset['label'], subset['avg_rt'], marker='o', label=tg, linewidth=2, markersize=6)
-    axes[0, 0].set_xlabel('Test Date', fontsize=10)
-    axes[0, 0].set_ylabel('Average Response Time (ms)', fontsize=10)
-    axes[0, 0].set_title('Response Time Trend', fontsize=12)
-    axes[0, 0].legend(fontsize=9)
+        axes[0, 0].plot(subset['label'], subset['avg_rt'], marker='o', label=tg, linewidth=1.5, markersize=4)
+    axes[0, 0].set_xlabel('Test Date', fontsize=8)
+    axes[0, 0].set_ylabel('Average Response Time (ms)', fontsize=8)
+    axes[0, 0].set_title('Response Time Trend', fontsize=10)
+    axes[0, 0].legend(fontsize=7)
     axes[0, 0].grid(True, alpha=0.3)
-    axes[0, 0].tick_params(axis='both', which='major', labelsize=9)
+    axes[0, 0].tick_params(axis='both', which='major', labelsize=7)
     
     # 成功率趋势
     for i, tg in enumerate(['TG1_HTTP Request', 'TG2_HTTP Request']):
         subset = result_df[result_df['tg'] == tg]
-        axes[0, 1].plot(subset['label'], subset['success'], marker='s', label=tg, linewidth=2, markersize=6)
-    axes[0, 1].set_xlabel('Test Date', fontsize=10)
-    axes[0, 1].set_ylabel('Success Rate (%)', fontsize=10)
-    axes[0, 1].set_title('Success Rate Trend', fontsize=12)
-    axes[0, 1].legend(fontsize=9)
+        axes[0, 1].plot(subset['label'], subset['success'], marker='s', label=tg, linewidth=1.5, markersize=4)
+    axes[0, 1].set_xlabel('Test Date', fontsize=8)
+    axes[0, 1].set_ylabel('Success Rate (%)', fontsize=8)
+    axes[0, 1].set_title('Success Rate Trend', fontsize=10)
+    axes[0, 1].legend(fontsize=7)
     axes[0, 1].grid(True, alpha=0.3)
-    axes[0, 1].tick_params(axis='both', which='major', labelsize=9)
+    axes[0, 1].tick_params(axis='both', which='major', labelsize=7)
     
     # 吞吐量趋势
     for i, tg in enumerate(['TG1_HTTP Request', 'TG2_HTTP Request']):
         subset = result_df[result_df['tg'] == tg]
-        axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, linewidth=2, markersize=6)
-    axes[1, 0].set_xlabel('Test Date', fontsize=10)
-    axes[1, 0].set_ylabel('Throughput (samples/sec)', fontsize=10)
-    axes[1, 0].set_title('Throughput Trend', fontsize=12)
-    axes[1, 0].legend(fontsize=9)
+        axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, linewidth=1.5, markersize=4)
+    axes[1, 0].set_xlabel('Test Date', fontsize=8)
+    axes[1, 0].set_ylabel('Throughput (samples/sec)', fontsize=8)
+    axes[1, 0].set_title('Throughput Trend', fontsize=10)
+    axes[1, 0].legend(fontsize=7)
     axes[1, 0].grid(True, alpha=0.3)
-    axes[1, 0].tick_params(axis='both', which='major', labelsize=9)
+    axes[1, 0].tick_params(axis='both', which='major', labelsize=7)
     
     # 性能对比柱状图
     latest_data = result_df.groupby('tg').last()
     x = range(len(latest_data))
     axes[1, 1].bar([i-0.2 for i in x], latest_data['avg_rt'], width=0.4, label='Response Time (ms)', alpha=0.7)
-    axes[1, 1].set_xlabel('Thread Groups', fontsize=10)
-    axes[1, 1].set_ylabel('Response Time (ms)', fontsize=10)
-    axes[1, 1].set_title('Latest Performance Comparison', fontsize=12)
+    axes[1, 1].set_xlabel('Thread Groups', fontsize=8)
+    axes[1, 1].set_ylabel('Response Time (ms)', fontsize=8)
+    axes[1, 1].set_title('Latest Performance Comparison', fontsize=10)
     axes[1, 1].set_xticks(x)
-    axes[1, 1].set_xticklabels(latest_data.index, rotation=45, fontsize=9)
-    axes[1, 1].legend(fontsize=9)
+    axes[1, 1].set_xticklabels(latest_data.index, rotation=45, fontsize=7)
+    axes[1, 1].legend(fontsize=7)
     axes[1, 1].grid(True, alpha=0.3)
-    axes[1, 1].tick_params(axis='both', which='major', labelsize=9)
+    axes[1, 1].tick_params(axis='both', which='major', labelsize=7)
     
     plt.tight_layout()
-    plt.savefig(os.path.join(result_dir, 'performance_dashboard.png'), dpi=200, bbox_inches='tight')
+    plt.savefig(os.path.join(result_dir, 'performance_dashboard.png'), dpi=150, bbox_inches='tight')
     plt.close()
 
 # 生成 dashboard.html
@@ -144,75 +144,75 @@ dashboard_template = """
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
-            padding: 10px; 
+            padding: 5px; 
             background-color: #f5f5f5;
-            font-size: 14px;
+            font-size: 12px;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 800px;
             margin: 0 auto;
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         
         h1 { 
             color: #2c3e50; 
             text-align: center;
             border-bottom: 2px solid #3498db;
-            padding-bottom: 8px;
-            font-size: 24px;
-            margin-bottom: 20px;
+            padding-bottom: 6px;
+            font-size: 18px;
+            margin-bottom: 15px;
         }
         
         h2 { 
             color: #34495e; 
-            margin-top: 25px;
-            margin-bottom: 15px;
-            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 14px;
         }
         
         .summary-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 15px 0;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
         }
         
         .stat-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 10px;
+            border-radius: 6px;
             text-align: center;
         }
         
         .stat-card h3 {
-            margin: 0 0 8px 0;
-            font-size: 12px;
+            margin: 0 0 5px 0;
+            font-size: 10px;
             opacity: 0.9;
         }
         
         .stat-card .value {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
         }
         
         table { 
             border-collapse: collapse; 
             width: 100%; 
-            margin: 15px 0;
-            border-radius: 6px;
+            margin: 10px 0;
+            border-radius: 4px;
             overflow: hidden;
-            box-shadow: 0 0 8px rgba(0,0,0,0.1);
-            font-size: 12px;
+            box-shadow: 0 0 6px rgba(0,0,0,0.1);
+            font-size: 10px;
         }
         
         th, td { 
             border: 1px solid #ddd; 
-            padding: 8px; 
+            padding: 6px; 
             text-align: center; 
         }
         
@@ -220,7 +220,7 @@ dashboard_template = """
             background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 10px;
         }
         
         tr:nth-child(even) { background-color: #f9f9f9; }
@@ -229,109 +229,115 @@ dashboard_template = """
         img { 
             max-width: 100%; 
             height: auto;
-            border-radius: 6px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin: 15px 0;
+            border-radius: 4px;
+            box-shadow: 0 0 6px rgba(0,0,0,0.1);
+            margin: 10px 0;
         }
         
         .chart-container {
             text-align: center;
-            margin: 20px 0;
+            margin: 15px 0;
         }
         
         .performance-insights {
             background: #e8f4fd;
-            padding: 15px;
-            border-radius: 6px;
-            margin: 15px 0;
-            border-left: 3px solid #3498db;
-            font-size: 13px;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 2px solid #3498db;
+            font-size: 11px;
         }
         
         .performance-insights ul {
-            margin: 10px 0;
-            padding-left: 20px;
+            margin: 8px 0;
+            padding-left: 15px;
         }
         
         .performance-insights li {
-            margin: 5px 0;
+            margin: 3px 0;
         }
         
         /* 响应式设计 */
         @media (max-width: 768px) {
             .container {
-                padding: 15px;
-                margin: 5px;
+                padding: 10px;
+                margin: 3px;
             }
             
             .summary-stats {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
+                gap: 8px;
             }
             
             .stat-card {
-                padding: 12px;
+                padding: 8px;
             }
             
             .stat-card .value {
-                font-size: 16px;
+                font-size: 14px;
             }
             
             table {
-                font-size: 11px;
+                font-size: 9px;
             }
             
             th, td {
-                padding: 6px;
+                padding: 4px;
             }
         }
         
         /* 紧凑模式 */
         .compact-mode {
-            font-size: 12px;
+            font-size: 10px;
         }
         
         .compact-mode .container {
-            padding: 15px;
+            padding: 10px;
+            max-width: 600px;
         }
         
         .compact-mode h1 {
-            font-size: 20px;
-            margin-bottom: 15px;
+            font-size: 16px;
+            margin-bottom: 10px;
         }
         
         .compact-mode h2 {
-            font-size: 16px;
-            margin-top: 20px;
+            font-size: 12px;
+            margin-top: 15px;
         }
         
         .compact-mode .summary-stats {
-            gap: 10px;
+            gap: 8px;
         }
         
         .compact-mode .stat-card {
-            padding: 12px;
+            padding: 8px;
         }
         
         .compact-mode .stat-card .value {
-            font-size: 18px;
+            font-size: 14px;
+        }
+        
+        .compact-mode .performance-insights {
+            padding: 8px;
+            font-size: 10px;
         }
         
         /* 添加切换按钮 */
         .toggle-container {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         .toggle-btn {
             background: #3498db;
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
+            padding: 6px 12px;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 12px;
-            margin: 0 5px;
+            font-size: 10px;
+            margin: 0 3px;
         }
         
         .toggle-btn:hover {
@@ -341,13 +347,59 @@ dashboard_template = """
         .toggle-btn.active {
             background: #27ae60;
         }
+        
+        /* 超紧凑模式 */
+        .ultra-compact {
+            font-size: 9px;
+        }
+        
+        .ultra-compact .container {
+            padding: 8px;
+            max-width: 500px;
+        }
+        
+        .ultra-compact h1 {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .ultra-compact h2 {
+            font-size: 11px;
+            margin-top: 12px;
+        }
+        
+        .ultra-compact .summary-stats {
+            gap: 6px;
+        }
+        
+        .ultra-compact .stat-card {
+            padding: 6px;
+        }
+        
+        .ultra-compact .stat-card .value {
+            font-size: 12px;
+        }
+        
+        .ultra-compact table {
+            font-size: 8px;
+        }
+        
+        .ultra-compact th, .ultra-compact td {
+            padding: 3px;
+        }
+        
+        .ultra-compact .performance-insights {
+            padding: 6px;
+            font-size: 9px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="toggle-container">
-            <button class="toggle-btn active" onclick="toggleCompact(false)">标准模式</button>
-            <button class="toggle-btn" onclick="toggleCompact(true)">紧凑模式</button>
+            <button class="toggle-btn active" onclick="toggleMode('normal')">标准</button>
+            <button class="toggle-btn" onclick="toggleMode('compact')">紧凑</button>
+            <button class="toggle-btn" onclick="toggleMode('ultra')">超紧凑</button>
         </div>
         
         <h1>🚀 JMeter Performance Dashboard</h1>
@@ -373,7 +425,7 @@ dashboard_template = """
 
         <div class="chart-container">
             <h2>📊 Performance Dashboard</h2>
-            <img src="performance_dashboard.png" alt="Performance Dashboard" style="max-width: 800px;">
+            <img src="performance_dashboard.png" alt="Performance Dashboard" style="max-width: 600px;">
         </div>
 
         <div class="performance-insights">
@@ -408,25 +460,36 @@ dashboard_template = """
     </div>
     
     <script>
-        function toggleCompact(isCompact) {
+        function toggleMode(mode) {
             const body = document.body;
             const buttons = document.querySelectorAll('.toggle-btn');
             
-            if (isCompact) {
+            // 移除所有模式类
+            body.classList.remove('compact-mode', 'ultra-compact');
+            
+            // 移除所有按钮的active类
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // 添加选中的模式
+            if (mode === 'compact') {
                 body.classList.add('compact-mode');
-                buttons[0].classList.remove('active');
                 buttons[1].classList.add('active');
+            } else if (mode === 'ultra') {
+                body.classList.add('ultra-compact');
+                buttons[2].classList.add('active');
             } else {
-                body.classList.remove('compact-mode');
                 buttons[0].classList.add('active');
-                buttons[1].classList.remove('active');
             }
         }
         
         // 自动检测窗口大小并调整
         function adjustLayout() {
-            if (window.innerWidth < 768) {
-                toggleCompact(true);
+            if (window.innerWidth < 600) {
+                toggleMode('ultra');
+            } else if (window.innerWidth < 900) {
+                toggleMode('compact');
+            } else {
+                toggleMode('normal');
             }
         }
         
