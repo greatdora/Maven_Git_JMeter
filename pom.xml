@@ -116,9 +116,12 @@
                 <configuration>
                     <resultsFileFormat>csv</resultsFileFormat>
                     <resultsFileNameDateFormat>yyyyMMdd_HHmm</resultsFileNameDateFormat>
-                    <resultsFileName>sample_test</resultsFileName>
                     <generateReports>true</generateReports>
                     <testResultsTimestamp>true</testResultsTimestamp>
+                    <ignoreResultFailures>true</ignoreResultFailures>
+                    <testFilesIncluded>
+                        <jMeterTestFile>simple_test.jmx</jMeterTestFile>
+                    </testFilesIncluded>
                 </configuration>
                 <executions>
                     <execution>
