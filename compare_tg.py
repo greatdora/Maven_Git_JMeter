@@ -75,58 +75,58 @@ result_df['date'] = pd.to_datetime(result_df['label'].str[:8], format='%Y%m%d')
 result_df = result_df.sort_values('date')
 
 if not result_df.empty:
-    # 创建图表
-    fig, axes = plt.subplots(2, 2, figsize=(10, 8))
-    fig.suptitle('JMeter Performance Analysis Dashboard', fontsize=12, fontweight='bold')
+    # 创建图表 - 进一步减小尺寸
+    fig, axes = plt.subplots(2, 2, figsize=(8, 6))
+    fig.suptitle('JMeter Performance Analysis Dashboard', fontsize=10, fontweight='bold')
     
     # 响应时间趋势
     for i, tg in enumerate(['TG1_HTTP Request', 'TG2_HTTP Request']):
         subset = result_df[result_df['tg'] == tg]
-        axes[0, 0].plot(subset['label'], subset['avg_rt'], marker='o', label=tg, linewidth=1.5, markersize=4)
-    axes[0, 0].set_xlabel('Test Date', fontsize=8)
-    axes[0, 0].set_ylabel('Average Response Time (ms)', fontsize=8)
-    axes[0, 0].set_title('Response Time Trend', fontsize=10)
-    axes[0, 0].legend(fontsize=7)
+        axes[0, 0].plot(subset['label'], subset['avg_rt'], marker='o', label=tg, linewidth=1, markersize=3)
+    axes[0, 0].set_xlabel('Test Date', fontsize=7)
+    axes[0, 0].set_ylabel('Average Response Time (ms)', fontsize=7)
+    axes[0, 0].set_title('Response Time Trend', fontsize=8)
+    axes[0, 0].legend(fontsize=6)
     axes[0, 0].grid(True, alpha=0.3)
-    axes[0, 0].tick_params(axis='both', which='major', labelsize=7)
+    axes[0, 0].tick_params(axis='both', which='major', labelsize=6)
     
     # 成功率趋势
     for i, tg in enumerate(['TG1_HTTP Request', 'TG2_HTTP Request']):
         subset = result_df[result_df['tg'] == tg]
-        axes[0, 1].plot(subset['label'], subset['success'], marker='s', label=tg, linewidth=1.5, markersize=4)
-    axes[0, 1].set_xlabel('Test Date', fontsize=8)
-    axes[0, 1].set_ylabel('Success Rate (%)', fontsize=8)
-    axes[0, 1].set_title('Success Rate Trend', fontsize=10)
-    axes[0, 1].legend(fontsize=7)
+        axes[0, 1].plot(subset['label'], subset['success'], marker='s', label=tg, linewidth=1, markersize=3)
+    axes[0, 1].set_xlabel('Test Date', fontsize=7)
+    axes[0, 1].set_ylabel('Success Rate (%)', fontsize=7)
+    axes[0, 1].set_title('Success Rate Trend', fontsize=8)
+    axes[0, 1].legend(fontsize=6)
     axes[0, 1].grid(True, alpha=0.3)
-    axes[0, 1].tick_params(axis='both', which='major', labelsize=7)
+    axes[0, 1].tick_params(axis='both', which='major', labelsize=6)
     
     # 吞吐量趋势
     for i, tg in enumerate(['TG1_HTTP Request', 'TG2_HTTP Request']):
         subset = result_df[result_df['tg'] == tg]
-        axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, linewidth=1.5, markersize=4)
-    axes[1, 0].set_xlabel('Test Date', fontsize=8)
-    axes[1, 0].set_ylabel('Throughput (samples/sec)', fontsize=8)
-    axes[1, 0].set_title('Throughput Trend', fontsize=10)
-    axes[1, 0].legend(fontsize=7)
+        axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, linewidth=1, markersize=3)
+    axes[1, 0].set_xlabel('Test Date', fontsize=7)
+    axes[1, 0].set_ylabel('Throughput (samples/sec)', fontsize=7)
+    axes[1, 0].set_title('Throughput Trend', fontsize=8)
+    axes[1, 0].legend(fontsize=6)
     axes[1, 0].grid(True, alpha=0.3)
-    axes[1, 0].tick_params(axis='both', which='major', labelsize=7)
+    axes[1, 0].tick_params(axis='both', which='major', labelsize=6)
     
     # 性能对比柱状图
     latest_data = result_df.groupby('tg').last()
     x = range(len(latest_data))
     axes[1, 1].bar([i-0.2 for i in x], latest_data['avg_rt'], width=0.4, label='Response Time (ms)', alpha=0.7)
-    axes[1, 1].set_xlabel('Thread Groups', fontsize=8)
-    axes[1, 1].set_ylabel('Response Time (ms)', fontsize=8)
-    axes[1, 1].set_title('Latest Performance Comparison', fontsize=10)
+    axes[1, 1].set_xlabel('Thread Groups', fontsize=7)
+    axes[1, 1].set_ylabel('Response Time (ms)', fontsize=7)
+    axes[1, 1].set_title('Latest Performance Comparison', fontsize=8)
     axes[1, 1].set_xticks(x)
-    axes[1, 1].set_xticklabels(latest_data.index, rotation=45, fontsize=7)
-    axes[1, 1].legend(fontsize=7)
+    axes[1, 1].set_xticklabels(latest_data.index, rotation=45, fontsize=6)
+    axes[1, 1].legend(fontsize=6)
     axes[1, 1].grid(True, alpha=0.3)
-    axes[1, 1].tick_params(axis='both', which='major', labelsize=7)
+    axes[1, 1].tick_params(axis='both', which='major', labelsize=6)
     
     plt.tight_layout()
-    plt.savefig(os.path.join(result_dir, 'performance_dashboard.png'), dpi=150, bbox_inches='tight')
+    plt.savefig(os.path.join(result_dir, 'performance_dashboard.png'), dpi=120, bbox_inches='tight')
     plt.close()
 
 # 生成 dashboard.html
@@ -227,11 +227,19 @@ dashboard_template = """
         tr:hover { background-color: #f0f0f0; }
         
         img { 
-            max-width: 100%; 
+            max-width: 400px; 
             height: auto;
             border-radius: 4px;
             box-shadow: 0 0 6px rgba(0,0,0,0.1);
             margin: 10px 0;
+        }
+        
+        .compact-mode img {
+            max-width: 300px;
+        }
+        
+        .ultra-compact img {
+            max-width: 250px;
         }
         
         .chart-container {
@@ -425,7 +433,7 @@ dashboard_template = """
 
         <div class="chart-container">
             <h2>📊 Performance Dashboard</h2>
-            <img src="performance_dashboard.png" alt="Performance Dashboard" style="max-width: 600px;">
+            <img src="performance_dashboard.png" alt="Performance Dashboard" style="max-width: 400px; height: auto;">
         </div>
 
         <div class="performance-insights">

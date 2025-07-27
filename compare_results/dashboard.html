@@ -95,11 +95,19 @@
         tr:hover { background-color: #f0f0f0; }
         
         img { 
-            max-width: 100%; 
+            max-width: 400px; 
             height: auto;
             border-radius: 4px;
             box-shadow: 0 0 6px rgba(0,0,0,0.1);
             margin: 10px 0;
+        }
+        
+        .compact-mode img {
+            max-width: 300px;
+        }
+        
+        .ultra-compact img {
+            max-width: 250px;
         }
         
         .chart-container {
@@ -293,7 +301,7 @@
 
         <div class="chart-container">
             <h2>📊 Performance Dashboard</h2>
-            <img src="performance_dashboard.png" alt="Performance Dashboard" style="max-width: 600px;">
+            <img src="performance_dashboard.png" alt="Performance Dashboard" style="max-width: 400px; height: auto;">
         </div>
 
         <div class="performance-insights">
