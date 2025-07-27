@@ -76,53 +76,57 @@ result_df = result_df.sort_values('date')
 
 if not result_df.empty:
     # 创建图表
-    fig, axes = plt.subplots(2, 2, figsize=(15, 12))
-    fig.suptitle('JMeter Performance Analysis Dashboard', fontsize=16, fontweight='bold')
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    fig.suptitle('JMeter Performance Analysis Dashboard', fontsize=14, fontweight='bold')
     
     # 响应时间趋势
     for i, tg in enumerate(['TG1_HTTP Request', 'TG2_HTTP Request']):
         subset = result_df[result_df['tg'] == tg]
-        axes[0, 0].plot(subset['label'], subset['avg_rt'], marker='o', label=tg, linewidth=2, markersize=8)
-    axes[0, 0].set_xlabel('Test Date')
-    axes[0, 0].set_ylabel('Average Response Time (ms)')
-    axes[0, 0].set_title('Response Time Trend')
-    axes[0, 0].legend()
+        axes[0, 0].plot(subset['label'], subset['avg_rt'], marker='o', label=tg, linewidth=2, markersize=6)
+    axes[0, 0].set_xlabel('Test Date', fontsize=10)
+    axes[0, 0].set_ylabel('Average Response Time (ms)', fontsize=10)
+    axes[0, 0].set_title('Response Time Trend', fontsize=12)
+    axes[0, 0].legend(fontsize=9)
     axes[0, 0].grid(True, alpha=0.3)
+    axes[0, 0].tick_params(axis='both', which='major', labelsize=9)
     
     # 成功率趋势
     for i, tg in enumerate(['TG1_HTTP Request', 'TG2_HTTP Request']):
         subset = result_df[result_df['tg'] == tg]
-        axes[0, 1].plot(subset['label'], subset['success'], marker='s', label=tg, linewidth=2, markersize=8)
-    axes[0, 1].set_xlabel('Test Date')
-    axes[0, 1].set_ylabel('Success Rate (%)')
-    axes[0, 1].set_title('Success Rate Trend')
-    axes[0, 1].legend()
+        axes[0, 1].plot(subset['label'], subset['success'], marker='s', label=tg, linewidth=2, markersize=6)
+    axes[0, 1].set_xlabel('Test Date', fontsize=10)
+    axes[0, 1].set_ylabel('Success Rate (%)', fontsize=10)
+    axes[0, 1].set_title('Success Rate Trend', fontsize=12)
+    axes[0, 1].legend(fontsize=9)
     axes[0, 1].grid(True, alpha=0.3)
+    axes[0, 1].tick_params(axis='both', which='major', labelsize=9)
     
     # 吞吐量趋势
     for i, tg in enumerate(['TG1_HTTP Request', 'TG2_HTTP Request']):
         subset = result_df[result_df['tg'] == tg]
-        axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, linewidth=2, markersize=8)
-    axes[1, 0].set_xlabel('Test Date')
-    axes[1, 0].set_ylabel('Throughput (samples/sec)')
-    axes[1, 0].set_title('Throughput Trend')
-    axes[1, 0].legend()
+        axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, linewidth=2, markersize=6)
+    axes[1, 0].set_xlabel('Test Date', fontsize=10)
+    axes[1, 0].set_ylabel('Throughput (samples/sec)', fontsize=10)
+    axes[1, 0].set_title('Throughput Trend', fontsize=12)
+    axes[1, 0].legend(fontsize=9)
     axes[1, 0].grid(True, alpha=0.3)
+    axes[1, 0].tick_params(axis='both', which='major', labelsize=9)
     
     # 性能对比柱状图
     latest_data = result_df.groupby('tg').last()
     x = range(len(latest_data))
     axes[1, 1].bar([i-0.2 for i in x], latest_data['avg_rt'], width=0.4, label='Response Time (ms)', alpha=0.7)
-    axes[1, 1].set_xlabel('Thread Groups')
-    axes[1, 1].set_ylabel('Response Time (ms)')
-    axes[1, 1].set_title('Latest Performance Comparison')
+    axes[1, 1].set_xlabel('Thread Groups', fontsize=10)
+    axes[1, 1].set_ylabel('Response Time (ms)', fontsize=10)
+    axes[1, 1].set_title('Latest Performance Comparison', fontsize=12)
     axes[1, 1].set_xticks(x)
-    axes[1, 1].set_xticklabels(latest_data.index, rotation=45)
-    axes[1, 1].legend()
+    axes[1, 1].set_xticklabels(latest_data.index, rotation=45, fontsize=9)
+    axes[1, 1].legend(fontsize=9)
     axes[1, 1].grid(True, alpha=0.3)
+    axes[1, 1].tick_params(axis='both', which='major', labelsize=9)
     
     plt.tight_layout()
-    plt.savefig(os.path.join(result_dir, 'performance_dashboard.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(result_dir, 'performance_dashboard.png'), dpi=200, bbox_inches='tight')
     plt.close()
 
 # 生成 dashboard.html
@@ -131,119 +135,245 @@ dashboard_template = """
 <html>
 <head>
     <title>JMeter Performance Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
-            padding: 20px; 
+            padding: 10px; 
             background-color: #f5f5f5;
+            font-size: 14px;
         }
+        
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
         }
+        
         h1 { 
             color: #2c3e50; 
             text-align: center;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            font-size: 24px;
+            margin-bottom: 20px;
         }
+        
         h2 { 
             color: #34495e; 
-            margin-top: 30px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 18px;
         }
+        
         .summary-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
         }
+        
         .stat-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 8px;
             text-align: center;
         }
+        
         .stat-card h3 {
-            margin: 0 0 10px 0;
-            font-size: 14px;
+            margin: 0 0 8px 0;
+            font-size: 12px;
             opacity: 0.9;
         }
+        
         .stat-card .value {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
         }
+        
         table { 
             border-collapse: collapse; 
             width: 100%; 
-            margin: 20px 0;
-            border-radius: 8px;
+            margin: 15px 0;
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+            font-size: 12px;
         }
+        
         th, td { 
             border: 1px solid #ddd; 
-            padding: 12px; 
+            padding: 8px; 
             text-align: center; 
         }
+        
         th { 
             background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
             font-weight: bold;
+            font-size: 12px;
         }
+        
         tr:nth-child(even) { background-color: #f9f9f9; }
         tr:hover { background-color: #f0f0f0; }
+        
         img { 
             max-width: 100%; 
             height: auto;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            margin: 20px 0;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 15px 0;
         }
+        
         .chart-container {
             text-align: center;
-            margin: 30px 0;
+            margin: 20px 0;
         }
+        
         .performance-insights {
             background: #e8f4fd;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border-left: 4px solid #3498db;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 3px solid #3498db;
+            font-size: 13px;
+        }
+        
+        .performance-insights ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .performance-insights li {
+            margin: 5px 0;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin: 5px;
+            }
+            
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .stat-card {
+                padding: 12px;
+            }
+            
+            .stat-card .value {
+                font-size: 16px;
+            }
+            
+            table {
+                font-size: 11px;
+            }
+            
+            th, td {
+                padding: 6px;
+            }
+        }
+        
+        /* 紧凑模式 */
+        .compact-mode {
+            font-size: 12px;
+        }
+        
+        .compact-mode .container {
+            padding: 15px;
+        }
+        
+        .compact-mode h1 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .compact-mode h2 {
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        
+        .compact-mode .summary-stats {
+            gap: 10px;
+        }
+        
+        .compact-mode .stat-card {
+            padding: 12px;
+        }
+        
+        .compact-mode .stat-card .value {
+            font-size: 18px;
+        }
+        
+        /* 添加切换按钮 */
+        .toggle-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .toggle-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 0 5px;
+        }
+        
+        .toggle-btn:hover {
+            background: #2980b9;
+        }
+        
+        .toggle-btn.active {
+            background: #27ae60;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="toggle-container">
+            <button class="toggle-btn active" onclick="toggleCompact(false)">标准模式</button>
+            <button class="toggle-btn" onclick="toggleCompact(true)">紧凑模式</button>
+        </div>
+        
         <h1>🚀 JMeter Performance Dashboard</h1>
         
         <div class="summary-stats">
             <div class="stat-card">
-                <h3>Total Test Runs</h3>
+                <h3>总测试次数</h3>
                 <div class="value">{{ total_runs }}</div>
             </div>
             <div class="stat-card">
-                <h3>Average Response Time</h3>
+                <h3>平均响应时间</h3>
                 <div class="value">{{ "%.1f"|format(avg_response_time) }} ms</div>
             </div>
             <div class="stat-card">
-                <h3>Success Rate</h3>
+                <h3>成功率</h3>
                 <div class="value">{{ "%.1f"|format(avg_success_rate) }}%</div>
             </div>
             <div class="stat-card">
-                <h3>Average Throughput</h3>
+                <h3>平均吞吐量</h3>
                 <div class="value">{{ "%.1f"|format(avg_throughput) }} req/s</div>
             </div>
         </div>
 
         <div class="chart-container">
             <h2>📊 Performance Dashboard</h2>
-            <img src="performance_dashboard.png" alt="Performance Dashboard">
+            <img src="performance_dashboard.png" alt="Performance Dashboard" style="max-width: 800px;">
         </div>
 
         <div class="performance-insights">
@@ -276,6 +406,34 @@ dashboard_template = """
             {% endfor %}
         </table>
     </div>
+    
+    <script>
+        function toggleCompact(isCompact) {
+            const body = document.body;
+            const buttons = document.querySelectorAll('.toggle-btn');
+            
+            if (isCompact) {
+                body.classList.add('compact-mode');
+                buttons[0].classList.remove('active');
+                buttons[1].classList.add('active');
+            } else {
+                body.classList.remove('compact-mode');
+                buttons[0].classList.add('active');
+                buttons[1].classList.remove('active');
+            }
+        }
+        
+        // 自动检测窗口大小并调整
+        function adjustLayout() {
+            if (window.innerWidth < 768) {
+                toggleCompact(true);
+            }
+        }
+        
+        // 页面加载时调整
+        window.addEventListener('load', adjustLayout);
+        window.addEventListener('resize', adjustLayout);
+    </script>
 </body>
 </html>
 """
