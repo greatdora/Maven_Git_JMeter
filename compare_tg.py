@@ -22,8 +22,29 @@ for file in files:
     # 从文件名提取日期
     base = os.path.basename(file)
     date_part = base.split('-')[0]
-    dt = datetime.datetime.now()
-    label = f"{date_part}_{dt.strftime('%H%M')}"
+    
+    # 解析日期并格式化为更清晰的格式
+    try:
+        # 假设文件名格式为 YYYYMMDD_HHMM-simple_test.csv
+        if '_' in date_part:
+            date_str, time_str = date_part.split('_', 1)
+            # 解析日期
+            date_obj = datetime.datetime.strptime(date_str, '%Y%m%d')
+            # 解析时间
+            time_obj = datetime.datetime.strptime(time_str, '%H%M')
+            # 组合日期和时间
+            combined_datetime = date_obj.replace(hour=time_obj.hour, minute=time_obj.minute)
+            # 格式化为更清晰的标签
+            label = combined_datetime.strftime('%Y-%m-%d %H:%M')
+        else:
+            # 如果文件名格式不同，使用当前时间
+            dt = datetime.datetime.now()
+            label = f"{date_part}_{dt.strftime('%H%M')}"
+    except Exception as e:
+        print(f"Error parsing date from filename {base}: {e}")
+        # 使用当前时间作为备选
+        dt = datetime.datetime.now()
+        label = f"{date_part}_{dt.strftime('%H%M')}"
 
     try:
         df = pd.read_csv(file)
@@ -82,7 +103,8 @@ for data in additional_data:
 result_df = pd.DataFrame(results)
 
 # 按日期排序
-result_df['date'] = pd.to_datetime(result_df['label'].str[:8], format='%Y%m%d')
+# 从label中提取日期部分进行排序
+result_df['date'] = pd.to_datetime(result_df['label'], format='%Y-%m-%d %H:%M')
 result_df = result_df.sort_values('date')
 
 if not result_df.empty:
