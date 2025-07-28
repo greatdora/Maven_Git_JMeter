@@ -90,7 +90,24 @@ for file in files:
 # 添加额外数据
 for data in additional_data:
     date_part = data['file'].split('-')[0]
-    label = f"{date_part}_0000"  # 使用默认时间
+    # 解析日期并格式化为统一格式
+    try:
+        if '_' in date_part:
+            date_str, time_str = date_part.split('_', 1)
+            # 解析日期
+            date_obj = datetime.datetime.strptime(date_str, '%Y%m%d')
+            # 解析时间
+            time_obj = datetime.datetime.strptime(time_str, '%H%M')
+            # 组合日期和时间
+            combined_datetime = date_obj.replace(hour=time_obj.hour, minute=time_obj.minute)
+            # 格式化为更清晰的标签
+            label = combined_datetime.strftime('%Y-%m-%d %H:%M')
+        else:
+            label = f"{date_part}_0000"
+    except Exception as e:
+        print(f"Error parsing date from additional data {date_part}: {e}")
+        label = f"{date_part}_0000"
+    
     results.append({
         'label': label,
         'file': data['file'],
@@ -117,10 +134,16 @@ if not result_df.empty:
               'Put_01': 'red', 'Put_02': 'pink'}
     
     # 创建4个独立的图表，每行一个
+    # 获取排序后的时间标签
+    sorted_labels = result_df['label'].unique()
+    sorted_labels = sorted(sorted_labels, key=lambda x: pd.to_datetime(x, format='%Y-%m-%d %H:%M'))
+    
+
+    
     # 1. 响应时间趋势图
     plt.figure(figsize=(10, 6))
     for tg in unique_thread_groups:
-        subset = result_df[result_df['tg'] == tg]
+        subset = result_df[result_df['tg'] == tg].sort_values('date')
         color = colors.get(tg, 'gray')
         plt.plot(subset['label'], subset['avg_rt'], marker='o', label=tg, 
                 linewidth=2, markersize=4, color=color)
@@ -129,7 +152,7 @@ if not result_df.empty:
     plt.title('Response Time Trend', fontsize=12, fontweight='bold')
     plt.legend(fontsize=9)
     plt.grid(True, alpha=0.3)
-    plt.xticks(rotation=45)
+    plt.xticks(range(len(sorted_labels)), sorted_labels, rotation=45)
     plt.tight_layout()
     plt.savefig(os.path.join(result_dir, 'response_time_trend.png'), dpi=150, bbox_inches='tight')
     plt.close()
@@ -137,7 +160,7 @@ if not result_df.empty:
     # 2. 成功率趋势图
     plt.figure(figsize=(10, 6))
     for tg in unique_thread_groups:
-        subset = result_df[result_df['tg'] == tg]
+        subset = result_df[result_df['tg'] == tg].sort_values('date')
         color = colors.get(tg, 'gray')
         plt.plot(subset['label'], subset['success'], marker='s', label=tg, 
                 linewidth=2, markersize=4, color=color)
@@ -146,7 +169,7 @@ if not result_df.empty:
     plt.title('Success Rate Trend', fontsize=12, fontweight='bold')
     plt.legend(fontsize=9)
     plt.grid(True, alpha=0.3)
-    plt.xticks(rotation=45)
+    plt.xticks(range(len(sorted_labels)), sorted_labels, rotation=45)
     plt.tight_layout()
     plt.savefig(os.path.join(result_dir, 'success_rate_trend.png'), dpi=150, bbox_inches='tight')
     plt.close()
@@ -154,7 +177,7 @@ if not result_df.empty:
     # 3. 吞吐量趋势图
     plt.figure(figsize=(10, 6))
     for tg in unique_thread_groups:
-        subset = result_df[result_df['tg'] == tg]
+        subset = result_df[result_df['tg'] == tg].sort_values('date')
         color = colors.get(tg, 'gray')
         plt.plot(subset['label'], subset['throughput'], marker='^', label=tg, 
                 linewidth=2, markersize=4, color=color)
@@ -163,7 +186,7 @@ if not result_df.empty:
     plt.title('Throughput Trend', fontsize=12, fontweight='bold')
     plt.legend(fontsize=9)
     plt.grid(True, alpha=0.3)
-    plt.xticks(rotation=45)
+    plt.xticks(range(len(sorted_labels)), sorted_labels, rotation=45)
     plt.tight_layout()
     plt.savefig(os.path.join(result_dir, 'throughput_trend.png'), dpi=150, bbox_inches='tight')
     plt.close()
