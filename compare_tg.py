@@ -774,4 +774,33 @@ print(f'Total test runs analyzed: {total_runs}')
 print(f'Average response time: {avg_response_time:.1f} ms')
 print(f'Average success rate: {avg_success_rate:.1f}%')
 print(f'Average throughput: {avg_throughput:.1f} req/s')
-print(f'Average throughput: {avg_throughput:.1f} req/s')
+
+# 生成Plot Plugin兼容的CSV数据
+if not result_df.empty:
+    # 准备Plot Plugin数据
+    plot_data = []
+    for _, row in result_df.iterrows():
+        plot_data.append({
+            'Date': row['label'],
+            'ThreadGroup': row['tg'],
+            'ResponseTime': row['avg_rt'],
+            'SuccessRate': row['success'],
+            'Throughput': row['throughput']
+        })
+    
+    # 保存为CSV文件
+    plot_df = pd.DataFrame(plot_data)
+    plot_csv_path = os.path.join(result_dir, 'performance_data.csv')
+    plot_df.to_csv(plot_csv_path, index=False)
+    print(f'Plot data generated: {plot_csv_path}')
+    
+    # 生成简化的趋势数据（按日期聚合）
+    trend_data = result_df.groupby(['label', 'tg']).agg({
+        'avg_rt': 'mean',
+        'success': 'mean', 
+        'throughput': 'mean'
+    }).reset_index()
+    
+    trend_csv_path = os.path.join(result_dir, 'trend_data.csv')
+    trend_data.to_csv(trend_csv_path, index=False)
+    print(f'Trend data generated: {trend_csv_path}')
