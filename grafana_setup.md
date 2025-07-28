@@ -43,13 +43,45 @@
 
 **macOS (使用 Homebrew):**
 ```bash
+# 安装 Grafana
 brew install grafana
+
+# 启动 Grafana 服务
 brew services start grafana
+
+# 检查服务状态
+brew services list | grep grafana
+
+# 查看服务日志
+brew services info grafana
 ```
 
-**Docker:**
+**macOS (手动启动):**
 ```bash
-docker run -d -p 3000:3000 grafana/grafana
+# 安装 Grafana
+brew install grafana
+
+# 手动启动 Grafana
+grafana-server --config=/usr/local/etc/grafana/grafana.ini
+
+# 或者后台运行
+nohup grafana-server --config=/usr/local/etc/grafana/grafana.ini > /dev/null 2>&1 &
+```
+
+**Docker (推荐):**
+```bash
+# 拉取并运行 Grafana 容器
+docker run -d \
+  --name grafana \
+  -p 3000:3000 \
+  -v grafana-storage:/var/lib/grafana \
+  grafana/grafana
+
+# 查看容器状态
+docker ps | grep grafana
+
+# 查看容器日志
+docker logs grafana
 ```
 
 **Linux:**
@@ -60,9 +92,10 @@ sudo add-apt-repository "deb https://packages.grafana.com/oss/deb stable main"
 sudo apt-get update
 sudo apt-get install grafana
 
-# 启动服务
+# 启动服务 (Linux 使用 systemctl)
 sudo systemctl start grafana-server
 sudo systemctl enable grafana-server
+sudo systemctl status grafana-server
 ```
 
 ### 2. **访问 Grafana**
