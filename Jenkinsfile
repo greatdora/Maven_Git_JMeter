@@ -74,55 +74,8 @@ pipeline {
                 includes: '**/*'
             ])
             
-            // 使用正确的Plot Plugin语法
-            script {
-                if (fileExists('compare_results/performance_data.csv')) {
-                    plot([
-                        [$class: 'Plot', 
-                         group: 'Performance Trends',
-                         name: 'Response Time',
-                         number: '1',
-                         style: 'line',
-                         data: [
-                             [$class: 'CsvSeries', 
-                              file: 'compare_results/performance_data.csv',
-                              label: 'Response Time (ms)',
-                              xpath: '//Date',
-                              ypath: '//ResponseTime'
-                             ]
-                         ]
-                        ],
-                        [$class: 'Plot', 
-                         group: 'Performance Trends',
-                         name: 'Success Rate',
-                         number: '2',
-                         style: 'line',
-                         data: [
-                             [$class: 'CsvSeries', 
-                              file: 'compare_results/performance_data.csv',
-                              label: 'Success Rate (%)',
-                              xpath: '//Date',
-                              ypath: '//SuccessRate'
-                             ]
-                         ]
-                        ],
-                        [$class: 'Plot', 
-                         group: 'Performance Trends',
-                         name: 'Throughput',
-                         number: '3',
-                         style: 'line',
-                         data: [
-                             [$class: 'CsvSeries', 
-                              file: 'compare_results/performance_data.csv',
-                              label: 'Throughput (req/s)',
-                              xpath: '//Date',
-                              ypath: '//Throughput'
-                             ]
-                         ]
-                        ]
-                    ])
-                }
-            }
+            // 暂时移除Plot Plugin，专注于HTML Dashboard
+            echo 'HTML Dashboard已生成，可在Jenkins中查看Performance Dashboard报告。'
         }
         success {
             echo '构建成功！性能测试完成。'
