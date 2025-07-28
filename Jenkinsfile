@@ -74,39 +74,55 @@ pipeline {
                 includes: '**/*'
             ])
             
-            // 添加Plot Plugin配置
-            plot([
-                csvSeries(
-                    file: 'compare_results/performance_data.csv',
-                    displayTableFlag: true,
-                    exclusion: '',
-                    fileType: 'csv',
-                    includeZeroFlag: false,
-                    label: 'Response Time Trend',
-                    url: '',
-                    xpathType: 'summary'
-                ),
-                csvSeries(
-                    file: 'compare_results/performance_data.csv',
-                    displayTableFlag: false,
-                    exclusion: '',
-                    fileType: 'csv',
-                    includeZeroFlag: false,
-                    label: 'Success Rate Trend',
-                    url: '',
-                    xpathType: 'summary'
-                ),
-                csvSeries(
-                    file: 'compare_results/performance_data.csv',
-                    displayTableFlag: false,
-                    exclusion: '',
-                    fileType: 'csv',
-                    includeZeroFlag: false,
-                    label: 'Throughput Trend',
-                    url: '',
-                    xpathType: 'summary'
-                )
-            ], 'Performance Trends', 'JMeter Performance Analysis')
+            // 使用正确的Plot Plugin语法
+            script {
+                if (fileExists('compare_results/performance_data.csv')) {
+                    plot([
+                        [$class: 'Plot', 
+                         group: 'Performance Trends',
+                         name: 'Response Time',
+                         number: '1',
+                         style: 'line',
+                         data: [
+                             [$class: 'CsvSeries', 
+                              file: 'compare_results/performance_data.csv',
+                              label: 'Response Time (ms)',
+                              xpath: '//Date',
+                              ypath: '//ResponseTime'
+                             ]
+                         ]
+                        ],
+                        [$class: 'Plot', 
+                         group: 'Performance Trends',
+                         name: 'Success Rate',
+                         number: '2',
+                         style: 'line',
+                         data: [
+                             [$class: 'CsvSeries', 
+                              file: 'compare_results/performance_data.csv',
+                              label: 'Success Rate (%)',
+                              xpath: '//Date',
+                              ypath: '//SuccessRate'
+                             ]
+                         ]
+                        ],
+                        [$class: 'Plot', 
+                         group: 'Performance Trends',
+                         name: 'Throughput',
+                         number: '3',
+                         style: 'line',
+                         data: [
+                             [$class: 'CsvSeries', 
+                              file: 'compare_results/performance_data.csv',
+                              label: 'Throughput (req/s)',
+                              xpath: '//Date',
+                              ypath: '//Throughput'
+                             ]
+                         ]
+                        ]
+                    ])
+                }
+            }
         }
         success {
             echo '构建成功！性能测试完成。'

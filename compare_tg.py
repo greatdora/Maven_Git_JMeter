@@ -25,29 +25,46 @@ for file in files:
     dt = datetime.datetime.now()
     label = f"{date_part}_{dt.strftime('%H%M')}"
 
-    df = pd.read_csv(file)
-    # 按线程组名称分组
-    unique_thread_groups = df['threadName'].str.extract(r'(Get_\d+|Post_\d+|Put_\d+)')[0].unique()
-    for tg in unique_thread_groups:
-        if pd.notna(tg):  # 确保不是NaN
-            tg_df = df[df['threadName'].str.contains(tg, na=False)]
-            if not tg_df.empty:
-                avg_rt = tg_df['elapsed'].mean()
-                success = tg_df['success'].mean() * 100
-                # 计算 throughput（每秒采样数）
-                if len(tg_df) > 1:
-                    duration = (tg_df['timeStamp'].max() - tg_df['timeStamp'].min()) / 1000
-                    throughput = len(tg_df) / duration if duration > 0 else 0
-                else:
-                    throughput = 0
-                results.append({
-                    'label': label,
-                    'file': base,
-                    'tg': tg,
-                    'avg_rt': avg_rt,
-                    'success': success,
-                    'throughput': throughput
-                })
+    try:
+        df = pd.read_csv(file)
+        print(f"Processing file: {file}")
+        print(f"Columns: {df.columns.tolist()}")
+        
+        # 检查是否有threadName列
+        if 'threadName' not in df.columns:
+            print(f"Warning: threadName column not found in {file}")
+            continue
+            
+        # 按线程组名称分组
+        # 从threadName中提取线程组名称（去掉后面的数字）
+        df['threadGroup'] = df['threadName'].str.extract(r'(Get_\d+|Post_\d+|Put_\d+)')[0]
+        unique_thread_groups = df['threadGroup'].dropna().unique()
+        
+        print(f"Found thread groups: {unique_thread_groups}")
+        
+        for tg in unique_thread_groups:
+            if pd.notna(tg):  # 确保不是NaN
+                tg_df = df[df['threadGroup'] == tg]
+                if not tg_df.empty:
+                    avg_rt = tg_df['elapsed'].mean()
+                    success = tg_df['success'].mean() * 100
+                    # 计算 throughput（每秒采样数）
+                    if len(tg_df) > 1:
+                        duration = (tg_df['timeStamp'].max() - tg_df['timeStamp'].min()) / 1000
+                        throughput = len(tg_df) / duration if duration > 0 else 0
+                    else:
+                        throughput = 0
+                    results.append({
+                        'label': label,
+                        'file': base,
+                        'tg': tg,
+                        'avg_rt': avg_rt,
+                        'success': success,
+                        'throughput': throughput
+                    })
+    except Exception as e:
+        print(f"Error processing file {file}: {e}")
+        continue
 
 # 添加额外数据
 for data in additional_data:
@@ -461,7 +478,23 @@ dashboard_template = """
         .hidden {
             display: none !important;
         }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 12px 0;
+        }
+        
+        .chart-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px;
+            height: 200px;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -506,6 +539,21 @@ dashboard_template = """
         
         <div class="selection-status" id="selectionStatus">
             <strong>当前显示:</strong> 所有线程组
+        </div>
+        
+        <div class="chart-grid">
+            <div class="chart-item">
+                <canvas id="responseTimeChart"></canvas>
+            </div>
+            <div class="chart-item">
+                <canvas id="successRateChart"></canvas>
+            </div>
+            <div class="chart-item">
+                <canvas id="throughputChart"></canvas>
+            </div>
+            <div class="chart-item">
+                <canvas id="comparisonChart"></canvas>
+            </div>
         </div>
         
         <table class="data-table" id="performanceTable">
@@ -588,6 +636,153 @@ dashboard_template = """
     </div>
     
     <script>
+        // 准备图表数据
+        const chartData = {
+            labels: {{ chart_labels | tojson }},
+            datasets: [
+                {
+                    label: 'Get_01',
+                    data: {{ get_01_data | tojson }},
+                    borderColor: 'blue',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Get_02',
+                    data: {{ get_02_data | tojson }},
+                    borderColor: 'lightblue',
+                    backgroundColor: 'rgba(173, 216, 230, 0.1)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Post_01',
+                    data: {{ post_01_data | tojson }},
+                    borderColor: 'green',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Post_02',
+                    data: {{ post_02_data | tojson }},
+                    borderColor: 'lightgreen',
+                    backgroundColor: 'rgba(144, 238, 144, 0.1)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Put_01',
+                    data: {{ put_01_data | tojson }},
+                    borderColor: 'red',
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Put_02',
+                    data: {{ put_02_data | tojson }},
+                    borderColor: 'pink',
+                    backgroundColor: 'rgba(255, 192, 203, 0.1)',
+                    tension: 0.1
+                }
+            ]
+        };
+        
+        // 创建图表
+        const responseTimeChart = new Chart(document.getElementById('responseTimeChart'), {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Response Time Trend'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Response Time (ms)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        const successRateChart = new Chart(document.getElementById('successRateChart'), {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Success Rate Trend'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Success Rate (%)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        const throughputChart = new Chart(document.getElementById('throughputChart'), {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Throughput Trend'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Throughput (req/s)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        const comparisonChart = new Chart(document.getElementById('comparisonChart'), {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Latest Performance Comparison'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Response Time (ms)'
+                        }
+                    }
+                }
+            }
+        });
+        
         // 获取所有复选框和表格行
         const checkboxes = document.querySelectorAll('#threadGroupSelectors input[type="checkbox"]');
         const tableRows = document.querySelectorAll('#performanceTable tbody tr');
@@ -739,6 +934,46 @@ post_02_data = get_thread_group_data("Post_02")
 put_01_data = get_thread_group_data("Put_01")
 put_02_data = get_thread_group_data("Put_02")
 
+# 准备Chart.js数据
+def prepare_chart_data(result_df):
+    if result_df.empty:
+        return {
+            'labels': [],
+            'get_01_data': [],
+            'get_02_data': [],
+            'post_01_data': [],
+            'post_02_data': [],
+            'put_01_data': [],
+            'put_02_data': []
+        }
+    
+    # 获取所有唯一的日期标签
+    chart_labels = result_df['label'].unique().tolist()
+    
+    # 为每个线程组准备数据
+    def get_thread_group_chart_data(tg_name):
+        tg_data = result_df[result_df['tg'] == tg_name]
+        data = []
+        for label in chart_labels:
+            label_data = tg_data[tg_data['label'] == label]
+            if not label_data.empty:
+                data.append(float(label_data['avg_rt'].iloc[0]))
+            else:
+                data.append(0)
+        return data
+    
+    return {
+        'labels': chart_labels,
+        'get_01_data': get_thread_group_chart_data("Get_01"),
+        'get_02_data': get_thread_group_chart_data("Get_02"),
+        'post_01_data': get_thread_group_chart_data("Post_01"),
+        'post_02_data': get_thread_group_chart_data("Post_02"),
+        'put_01_data': get_thread_group_chart_data("Put_01"),
+        'put_02_data': get_thread_group_chart_data("Put_02")
+    }
+
+chart_data = prepare_chart_data(result_df)
+
 with open(output_path, 'w', encoding='utf-8') as f:
     f.write(Template(dashboard_template).render(
         total_runs=total_runs,
@@ -766,7 +1001,14 @@ with open(output_path, 'w', encoding='utf-8') as f:
         put_01_throughput=put_01_data['throughput'],
         put_02_rt=put_02_data['rt'],
         put_02_success=put_02_data['success'],
-        put_02_throughput=put_02_data['throughput']
+        put_02_throughput=put_02_data['throughput'],
+        chart_labels=chart_data['labels'],
+        get_01_data=chart_data['get_01_data'],
+        get_02_data=chart_data['get_02_data'],
+        post_01_data=chart_data['post_01_data'],
+        post_02_data=chart_data['post_02_data'],
+        put_01_data=chart_data['put_01_data'],
+        put_02_data=chart_data['put_02_data']
     ))
 
 print('Dashboard generated: compare_results/dashboard.html')
