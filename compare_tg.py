@@ -86,10 +86,6 @@ result_df['date'] = pd.to_datetime(result_df['label'].str[:8], format='%Y%m%d')
 result_df = result_df.sort_values('date')
 
 if not result_df.empty:
-    # 创建图表 - 进一步减小尺寸
-    fig, axes = plt.subplots(2, 2, figsize=(8, 6))
-    fig.suptitle('JMeter Performance Analysis Dashboard', fontsize=10, fontweight='bold')
-    
     # 获取所有唯一的线程组名称
     unique_thread_groups = result_df['tg'].unique()
     
@@ -98,60 +94,70 @@ if not result_df.empty:
               'Post_01': 'green', 'Post_02': 'lightgreen',
               'Put_01': 'red', 'Put_02': 'pink'}
     
-    # 响应时间趋势
+    # 创建4个独立的图表，每行一个
+    # 1. 响应时间趋势图
+    plt.figure(figsize=(10, 6))
     for tg in unique_thread_groups:
         subset = result_df[result_df['tg'] == tg]
         color = colors.get(tg, 'gray')
-        axes[0, 0].plot(subset['label'], subset['avg_rt'], marker='o', label=tg, 
-                        linewidth=1, markersize=3, color=color)
-    axes[0, 0].set_xlabel('Test Date', fontsize=7)
-    axes[0, 0].set_ylabel('Average Response Time (ms)', fontsize=7)
-    axes[0, 0].set_title('Response Time Trend', fontsize=8)
-    axes[0, 0].legend(fontsize=6)
-    axes[0, 0].grid(True, alpha=0.3)
-    axes[0, 0].tick_params(axis='both', which='major', labelsize=6)
+        plt.plot(subset['label'], subset['avg_rt'], marker='o', label=tg, 
+                linewidth=2, markersize=4, color=color)
+    plt.xlabel('Test Date', fontsize=10)
+    plt.ylabel('Average Response Time (ms)', fontsize=10)
+    plt.title('Response Time Trend', fontsize=12, fontweight='bold')
+    plt.legend(fontsize=9)
+    plt.grid(True, alpha=0.3)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(os.path.join(result_dir, 'response_time_trend.png'), dpi=150, bbox_inches='tight')
+    plt.close()
     
-    # 成功率趋势
+    # 2. 成功率趋势图
+    plt.figure(figsize=(10, 6))
     for tg in unique_thread_groups:
         subset = result_df[result_df['tg'] == tg]
         color = colors.get(tg, 'gray')
-        axes[0, 1].plot(subset['label'], subset['success'], marker='s', label=tg, 
-                        linewidth=1, markersize=3, color=color)
-    axes[0, 1].set_xlabel('Test Date', fontsize=7)
-    axes[0, 1].set_ylabel('Success Rate (%)', fontsize=7)
-    axes[0, 1].set_title('Success Rate Trend', fontsize=8)
-    axes[0, 1].legend(fontsize=6)
-    axes[0, 1].grid(True, alpha=0.3)
-    axes[0, 1].tick_params(axis='both', which='major', labelsize=6)
+        plt.plot(subset['label'], subset['success'], marker='s', label=tg, 
+                linewidth=2, markersize=4, color=color)
+    plt.xlabel('Test Date', fontsize=10)
+    plt.ylabel('Success Rate (%)', fontsize=10)
+    plt.title('Success Rate Trend', fontsize=12, fontweight='bold')
+    plt.legend(fontsize=9)
+    plt.grid(True, alpha=0.3)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(os.path.join(result_dir, 'success_rate_trend.png'), dpi=150, bbox_inches='tight')
+    plt.close()
     
-    # 吞吐量趋势
+    # 3. 吞吐量趋势图
+    plt.figure(figsize=(10, 6))
     for tg in unique_thread_groups:
         subset = result_df[result_df['tg'] == tg]
         color = colors.get(tg, 'gray')
-        axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, 
-                        linewidth=1, markersize=3, color=color)
-    axes[1, 0].set_xlabel('Test Date', fontsize=7)
-    axes[1, 0].set_ylabel('Throughput (samples/sec)', fontsize=7)
-    axes[1, 0].set_title('Throughput Trend', fontsize=8)
-    axes[1, 0].legend(fontsize=6)
-    axes[1, 0].grid(True, alpha=0.3)
-    axes[1, 0].tick_params(axis='both', which='major', labelsize=6)
+        plt.plot(subset['label'], subset['throughput'], marker='^', label=tg, 
+                linewidth=2, markersize=4, color=color)
+    plt.xlabel('Test Date', fontsize=10)
+    plt.ylabel('Throughput (samples/sec)', fontsize=10)
+    plt.title('Throughput Trend', fontsize=12, fontweight='bold')
+    plt.legend(fontsize=9)
+    plt.grid(True, alpha=0.3)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(os.path.join(result_dir, 'throughput_trend.png'), dpi=150, bbox_inches='tight')
+    plt.close()
     
-    # 性能对比柱状图
+    # 4. 性能对比柱状图
+    plt.figure(figsize=(10, 6))
     latest_data = result_df.groupby('tg').last()
     x = range(len(latest_data))
-    axes[1, 1].bar([i-0.2 for i in x], latest_data['avg_rt'], width=0.4, label='Response Time (ms)', alpha=0.7)
-    axes[1, 1].set_xlabel('Thread Groups', fontsize=7)
-    axes[1, 1].set_ylabel('Response Time (ms)', fontsize=7)
-    axes[1, 1].set_title('Latest Performance Comparison', fontsize=8)
-    axes[1, 1].set_xticks(x)
-    axes[1, 1].set_xticklabels(latest_data.index, rotation=45, fontsize=6)
-    axes[1, 1].legend(fontsize=6)
-    axes[1, 1].grid(True, alpha=0.3)
-    axes[1, 1].tick_params(axis='both', which='major', labelsize=6)
-    
+    plt.bar(x, latest_data['avg_rt'], alpha=0.7, color='skyblue')
+    plt.xlabel('Thread Groups', fontsize=10)
+    plt.ylabel('Response Time (ms)', fontsize=10)
+    plt.title('Latest Performance Comparison', fontsize=12, fontweight='bold')
+    plt.xticks(x, latest_data.index, rotation=45)
+    plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig(os.path.join(result_dir, 'performance_dashboard.png'), dpi=120, bbox_inches='tight')
+    plt.savefig(os.path.join(result_dir, 'performance_comparison.png'), dpi=150, bbox_inches='tight')
     plt.close()
 
 # 生成 dashboard.html
@@ -264,6 +270,35 @@ dashboard_template = """
             margin: 12px 0;
         }
         
+        .chart-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        
+        .chart-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .chart-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        
+        .chart-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
         .performance-insights {
             background: #e8f4fd;
             padding: 8px;
@@ -340,9 +375,26 @@ dashboard_template = """
             </div>
         </div>
 
-        <div class="chart-container">
-            <h2>📊 Performance Dashboard</h2>
-            <img src="performance_dashboard.png" alt="Performance Dashboard">
+        <div class="chart-grid">
+            <div class="chart-item">
+                <div class="chart-title">📈 Response Time Trend</div>
+                <img src="response_time_trend.png" alt="Response Time Trend">
+            </div>
+            
+            <div class="chart-item">
+                <div class="chart-title">✅ Success Rate Trend</div>
+                <img src="success_rate_trend.png" alt="Success Rate Trend">
+            </div>
+            
+            <div class="chart-item">
+                <div class="chart-title">🚀 Throughput Trend</div>
+                <img src="throughput_trend.png" alt="Throughput Trend">
+            </div>
+            
+            <div class="chart-item">
+                <div class="chart-title">📊 Latest Performance Comparison</div>
+                <img src="performance_comparison.png" alt="Performance Comparison">
+            </div>
         </div>
 
         <div class="performance-insights">
