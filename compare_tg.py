@@ -286,7 +286,7 @@ dashboard_template = """
         }
         
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
             background: white;
             padding: 12px;
@@ -366,13 +366,6 @@ dashboard_template = """
             background: #7f8c8d;
         }
         
-        .performance-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -419,29 +412,6 @@ dashboard_template = """
             margin: 2px 0;
         }
         
-        .hidden {
-            display: none !important;
-        }
-        
-        .chart-container {
-            position: relative;
-            margin: 12px 0;
-        }
-        
-        .chart-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 12px;
-            color: #666;
-            display: none;
-        }
-        
         .selection-status {
             background: #e8f5e8;
             border: 1px solid #27ae60;
@@ -451,6 +421,45 @@ dashboard_template = """
             font-size: 11px;
             color: #27ae60;
             display: none;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 10px;
+        }
+        
+        .data-table th,
+        .data-table td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: center;
+        }
+        
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .data-table tr:hover {
+            background: #f0f0f0;
+        }
+        
+        .thread-group {
+            font-weight: bold;
+        }
+        
+        .get-group { color: #007bff; }
+        .post-group { color: #28a745; }
+        .put-group { color: #dc3545; }
+        
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
@@ -499,12 +508,54 @@ dashboard_template = """
             <strong>当前显示:</strong> 所有线程组
         </div>
         
-        <div class="chart-container">
-            <img src="performance_dashboard.png" alt="Performance Dashboard" class="performance-image" id="dashboardImage">
-            <div class="chart-overlay" id="noDataOverlay">
-                请至少选择一个线程组来显示数据
-            </div>
-        </div>
+        <table class="data-table" id="performanceTable">
+            <thead>
+                <tr>
+                    <th>线程组</th>
+                    <th>响应时间 (ms)</th>
+                    <th>成功率 (%)</th>
+                    <th>吞吐量 (req/s)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-group="Get_01" class="get-group">
+                    <td class="thread-group">Get_01</td>
+                    <td>{{ get_01_rt }}</td>
+                    <td>{{ get_01_success }}</td>
+                    <td>{{ get_01_throughput }}</td>
+                </tr>
+                <tr data-group="Get_02" class="get-group">
+                    <td class="thread-group">Get_02</td>
+                    <td>{{ get_02_rt }}</td>
+                    <td>{{ get_02_success }}</td>
+                    <td>{{ get_02_throughput }}</td>
+                </tr>
+                <tr data-group="Post_01" class="post-group">
+                    <td class="thread-group">Post_01</td>
+                    <td>{{ post_01_rt }}</td>
+                    <td>{{ post_01_success }}</td>
+                    <td>{{ post_01_throughput }}</td>
+                </tr>
+                <tr data-group="Post_02" class="post-group">
+                    <td class="thread-group">Post_02</td>
+                    <td>{{ post_02_rt }}</td>
+                    <td>{{ post_02_success }}</td>
+                    <td>{{ post_02_throughput }}</td>
+                </tr>
+                <tr data-group="Put_01" class="put-group">
+                    <td class="thread-group">Put_01</td>
+                    <td>{{ put_01_rt }}</td>
+                    <td>{{ put_01_success }}</td>
+                    <td>{{ put_01_throughput }}</td>
+                </tr>
+                <tr data-group="Put_02" class="put-group">
+                    <td class="thread-group">Put_02</td>
+                    <td>{{ put_02_rt }}</td>
+                    <td>{{ put_02_success }}</td>
+                    <td>{{ put_02_throughput }}</td>
+                </tr>
+            </tbody>
+        </table>
         
         <div class="stats">
             <div class="stat-card">
@@ -537,10 +588,9 @@ dashboard_template = """
     </div>
     
     <script>
-        // 获取所有复选框
+        // 获取所有复选框和表格行
         const checkboxes = document.querySelectorAll('#threadGroupSelectors input[type="checkbox"]');
-        const dashboardImage = document.getElementById('dashboardImage');
-        const noDataOverlay = document.getElementById('noDataOverlay');
+        const tableRows = document.querySelectorAll('#performanceTable tbody tr');
         const selectionStatus = document.getElementById('selectionStatus');
         
         // 监听复选框变化
@@ -556,22 +606,31 @@ dashboard_template = """
             console.log('updateDisplay called, selected groups:', selectedGroups);
             
             if (selectedGroups.length === 0) {
-                dashboardImage.classList.add('hidden');
-                noDataOverlay.style.display = 'block';
                 selectionStatus.style.display = 'none';
-                console.log('No groups selected, hiding image');
+                console.log('No groups selected');
             } else {
-                dashboardImage.classList.remove('hidden');
-                noDataOverlay.style.display = 'none';
                 selectionStatus.style.display = 'block';
-                console.log('Groups selected, showing filtered image');
-                
-                // 更新状态显示
                 selectionStatus.innerHTML = `<strong>当前显示:</strong> ${selectedGroups.join(', ')}`;
+                console.log('Groups selected, updating table');
                 
-                // 动态更新图表
-                updateChartImage(selectedGroups);
+                // 更新表格显示
+                updateTable(selectedGroups);
             }
+        }
+        
+        function updateTable(selectedGroups) {
+            // 隐藏所有行
+            tableRows.forEach(row => {
+                row.classList.add('hidden');
+            });
+            
+            // 显示选中的行
+            selectedGroups.forEach(group => {
+                const row = document.querySelector(`tr[data-group="${group}"]`);
+                if (row) {
+                    row.classList.remove('hidden');
+                }
+            });
         }
         
         function selectAll() {
@@ -603,40 +662,6 @@ dashboard_template = """
                 cb.checked = cb.value.startsWith('Put');
             });
             updateDisplay();
-        }
-        
-        function updateChartImage(selectedGroups) {
-            // 根据选中的线程组选择对应的图表
-            let chartFile = 'performance_dashboard.png'; // 默认显示全部
-            
-            if (selectedGroups.length === 1) {
-                // 单个线程组
-                const group = selectedGroups[0];
-                chartFile = `performance_dashboard_${group}.png`;
-            } else if (selectedGroups.length === 2) {
-                // 检查是否是GET、POST或PUT组合
-                const isGetOnly = selectedGroups.every(g => g.startsWith('Get'));
-                const isPostOnly = selectedGroups.every(g => g.startsWith('Post'));
-                const isPutOnly = selectedGroups.every(g => g.startsWith('Put'));
-                
-                if (isGetOnly) {
-                    chartFile = 'performance_dashboard_Get_Only.png';
-                } else if (isPostOnly) {
-                    chartFile = 'performance_dashboard_Post_Only.png';
-                } else if (isPutOnly) {
-                    chartFile = 'performance_dashboard_Put_Only.png';
-                }
-            }
-            
-            // 更新图表
-            const timestamp = new Date().getTime();
-            dashboardImage.src = chartFile + '?t=' + timestamp;
-            
-            // 如果图表加载失败，回退到默认图表
-            dashboardImage.onerror = function() {
-                console.log('Filtered chart not found, using default chart');
-                dashboardImage.src = 'performance_dashboard.png?t=' + timestamp;
-            };
         }
         
         // 初始化显示
@@ -693,6 +718,27 @@ else:
 
 output_path = os.path.join(result_dir, 'dashboard.html')
 os.makedirs(result_dir, exist_ok=True)
+
+# 准备表格数据变量
+def get_thread_group_data(tg_name):
+    if not result_df.empty:
+        tg_data = result_df[result_df["tg"] == tg_name]
+        if len(tg_data) > 0:
+            return {
+                'rt': f"{tg_data['avg_rt'].iloc[0]:.1f}",
+                'success': f"{tg_data['success'].iloc[0]:.1f}",
+                'throughput': f"{tg_data['throughput'].iloc[0]:.1f}"
+            }
+    return {'rt': '0.0', 'success': '0.0', 'throughput': '0.0'}
+
+# 获取各线程组数据
+get_01_data = get_thread_group_data("Get_01")
+get_02_data = get_thread_group_data("Get_02")
+post_01_data = get_thread_group_data("Post_01")
+post_02_data = get_thread_group_data("Post_02")
+put_01_data = get_thread_group_data("Put_01")
+put_02_data = get_thread_group_data("Put_02")
+
 with open(output_path, 'w', encoding='utf-8') as f:
     f.write(Template(dashboard_template).render(
         total_runs=total_runs,
@@ -702,7 +748,25 @@ with open(output_path, 'w', encoding='utf-8') as f:
         response_time_insight=response_time_insight,
         success_rate_insight=success_rate_insight,
         throughput_insight=throughput_insight,
-        recommendation=recommendation
+        recommendation=recommendation,
+        get_01_rt=get_01_data['rt'],
+        get_01_success=get_01_data['success'],
+        get_01_throughput=get_01_data['throughput'],
+        get_02_rt=get_02_data['rt'],
+        get_02_success=get_02_data['success'],
+        get_02_throughput=get_02_data['throughput'],
+        post_01_rt=post_01_data['rt'],
+        post_01_success=post_01_data['success'],
+        post_01_throughput=post_01_data['throughput'],
+        post_02_rt=post_02_data['rt'],
+        post_02_success=post_02_data['success'],
+        post_02_throughput=post_02_data['throughput'],
+        put_01_rt=put_01_data['rt'],
+        put_01_success=put_01_data['success'],
+        put_01_throughput=put_01_data['throughput'],
+        put_02_rt=put_02_data['rt'],
+        put_02_success=put_02_data['success'],
+        put_02_throughput=put_02_data['throughput']
     ))
 
 print('Dashboard generated: compare_results/dashboard.html')
