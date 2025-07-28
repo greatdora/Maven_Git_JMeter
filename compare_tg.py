@@ -26,7 +26,7 @@ for file in files:
     label = f"{date_part}_{dt.strftime('%H%M')}"
 
     try:
-        df = pd.read_csv(file)
+    df = pd.read_csv(file)
         print(f"Processing file: {file}")
         print(f"Columns: {df.columns.tolist()}")
         
@@ -45,22 +45,22 @@ for file in files:
         for tg in unique_thread_groups:
             if pd.notna(tg):  # 确保不是NaN
                 tg_df = df[df['threadGroup'] == tg]
-                if not tg_df.empty:
-                    avg_rt = tg_df['elapsed'].mean()
-                    success = tg_df['success'].mean() * 100
-                    # 计算 throughput（每秒采样数）
-                    if len(tg_df) > 1:
-                        duration = (tg_df['timeStamp'].max() - tg_df['timeStamp'].min()) / 1000
-                        throughput = len(tg_df) / duration if duration > 0 else 0
-                    else:
-                        throughput = 0
-                    results.append({
-                        'label': label,
-                        'file': base,
-                        'tg': tg,
-                        'avg_rt': avg_rt,
-                        'success': success,
-                        'throughput': throughput
+        if not tg_df.empty:
+            avg_rt = tg_df['elapsed'].mean()
+            success = tg_df['success'].mean() * 100
+            # 计算 throughput（每秒采样数）
+            if len(tg_df) > 1:
+                duration = (tg_df['timeStamp'].max() - tg_df['timeStamp'].min()) / 1000
+                throughput = len(tg_df) / duration if duration > 0 else 0
+            else:
+                throughput = 0
+            results.append({
+                'label': label,
+                'file': base,
+                'tg': tg,
+                'avg_rt': avg_rt,
+                'success': success,
+                'throughput': throughput
                     })
     except Exception as e:
         print(f"Error processing file {file}: {e}")
@@ -77,7 +77,7 @@ for data in additional_data:
         'avg_rt': data['avg_rt'],
         'success': data['success'],
         'throughput': data['throughput']
-    })
+            })
 
 result_df = pd.DataFrame(results)
 
@@ -126,7 +126,7 @@ if not result_df.empty:
     
     # 吞吐量趋势
     for tg in unique_thread_groups:
-        subset = result_df[result_df['tg'] == tg]
+            subset = result_df[result_df['tg'] == tg]
         color = colors.get(tg, 'gray')
         axes[1, 0].plot(subset['label'], subset['throughput'], marker='^', label=tg, 
                         linewidth=1, markersize=3, color=color)
@@ -558,7 +558,7 @@ dashboard_template = """
         
         <table class="data-table" id="performanceTable">
             <thead>
-                <tr>
+        <tr>
                     <th>线程组</th>
                     <th>响应时间 (ms)</th>
                     <th>成功率 (%)</th>
@@ -595,15 +595,15 @@ dashboard_template = """
                     <td>{{ put_01_rt }}</td>
                     <td>{{ put_01_success }}</td>
                     <td>{{ put_01_throughput }}</td>
-                </tr>
+        </tr>
                 <tr data-group="Put_02" class="put-group">
                     <td class="thread-group">Put_02</td>
                     <td>{{ put_02_rt }}</td>
                     <td>{{ put_02_success }}</td>
                     <td>{{ put_02_throughput }}</td>
-                </tr>
+        </tr>
             </tbody>
-        </table>
+    </table>
         
         <div class="stats">
             <div class="stat-card">
