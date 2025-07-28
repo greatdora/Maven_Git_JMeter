@@ -25,29 +25,46 @@ for file in files:
     dt = datetime.datetime.now()
     label = f"{date_part}_{dt.strftime('%H%M')}"
 
-    df = pd.read_csv(file)
-    # 按线程组名称分组
-    unique_thread_groups = df['threadName'].str.extract(r'(Get_\d+|Post_\d+|Put_\d+)')[0].unique()
-    for tg in unique_thread_groups:
-        if pd.notna(tg):  # 确保不是NaN
-            tg_df = df[df['threadName'].str.contains(tg, na=False)]
-            if not tg_df.empty:
-                avg_rt = tg_df['elapsed'].mean()
-                success = tg_df['success'].mean() * 100
-                # 计算 throughput（每秒采样数）
-                if len(tg_df) > 1:
-                    duration = (tg_df['timeStamp'].max() - tg_df['timeStamp'].min()) / 1000
-                    throughput = len(tg_df) / duration if duration > 0 else 0
-                else:
-                    throughput = 0
-                results.append({
-                    'label': label,
-                    'file': base,
-                    'tg': tg,
-                    'avg_rt': avg_rt,
-                    'success': success,
-                    'throughput': throughput
-                })
+    try:
+        df = pd.read_csv(file)
+        print(f"Processing file: {file}")
+        print(f"Columns: {df.columns.tolist()}")
+        
+        # 检查是否有threadName列
+        if 'threadName' not in df.columns:
+            print(f"Warning: threadName column not found in {file}")
+            continue
+            
+        # 按线程组名称分组
+        # 从threadName中提取线程组名称（去掉后面的数字）
+        df['threadGroup'] = df['threadName'].str.extract(r'(Get_\d+|Post_\d+|Put_\d+)')[0]
+        unique_thread_groups = df['threadGroup'].dropna().unique()
+        
+        print(f"Found thread groups: {unique_thread_groups}")
+        
+        for tg in unique_thread_groups:
+            if pd.notna(tg):  # 确保不是NaN
+                tg_df = df[df['threadGroup'] == tg]
+                if not tg_df.empty:
+                    avg_rt = tg_df['elapsed'].mean()
+                    success = tg_df['success'].mean() * 100
+                    # 计算 throughput（每秒采样数）
+                    if len(tg_df) > 1:
+                        duration = (tg_df['timeStamp'].max() - tg_df['timeStamp'].min()) / 1000
+                        throughput = len(tg_df) / duration if duration > 0 else 0
+                    else:
+                        throughput = 0
+                    results.append({
+                        'label': label,
+                        'file': base,
+                        'tg': tg,
+                        'avg_rt': avg_rt,
+                        'success': success,
+                        'throughput': throughput
+                    })
+    except Exception as e:
+        print(f"Error processing file {file}: {e}")
+        continue
 
 # 添加额外数据
 for data in additional_data:
